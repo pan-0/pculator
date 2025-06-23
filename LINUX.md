@@ -56,5 +56,5 @@ I can't reproduce either of those errors now, I don't know why.
 
 ```
 login: pculator
-passoword: pculator
+password: pculator
 ```

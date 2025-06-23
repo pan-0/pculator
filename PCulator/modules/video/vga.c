@@ -210,6 +210,8 @@ void vga_update(uint32_t start_x, uint32_t start_y, uint32_t end_x, uint32_t end
 			pixelsperbyte = 1;
 			mode = VGA_MODE_GRAPHICS_8BPP;
 			break;
+		default:
+			UNREACHABLE();
 		}
 		xstride = (vga_w / xscanpixels) / pixelsperbyte;
 #ifdef DEBUG_VGA
