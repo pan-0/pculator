@@ -9,7 +9,7 @@ debug.ldflags ::=
 
 release.cflags ::= \
 	-g0 \
-	-O3 \
+	-O2 \
 	-flto=auto \
 	-fcf-protection=none \
 	-fno-plt \
@@ -36,7 +36,8 @@ CFLAGS ::= \
 	-Wno-parentheses \
 	$(shell sdl2-config --cflags)
 
-LDFLAGS ::= $($(BUILD).ldflags) -lm -lpcap $(shell sdl2-config --libs)
+LDFLAGS ::= $($(BUILD).ldflags)
+LDLIBS  ::= -lm -lpcap $(shell sdl2-config --libs)
 
 SRC ::= $(shell find PCulator/ -type f -name *.c) $(wildcard libudis86/*.c)
 OBJ ::= $(SRC:%.c=$(OBJDIR)/%.o)
@@ -48,7 +49,7 @@ $(OBJDIR):
 	mkdir -p $@ && cd $@ && dirname $(SRC) | sort -u | xargs mkdir -p
 
 $(OBJDIR)/pculator: $(OBJ)
-	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
 C = \
 	$(info CC	$(notdir $@)) \
