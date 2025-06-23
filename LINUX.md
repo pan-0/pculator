@@ -1,7 +1,7 @@
 # Linux instructions
 Dependencies on Debian 13:
 ```console
-sudo apt install libsd2l-dev libpcap-dev
+sudo apt install libsdl2-dev libpcap-dev
 ```
 
 Building:
