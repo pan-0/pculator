@@ -21,7 +21,7 @@ typedef struct {
     I8259_t* i8259;
 } i8042_t;
 
-void i8042_buffer_key_data(uint8_t* data, uint8_t len, uint8_t doirq);
+void i8042_buffer_key_data(const uint8_t* data, uint8_t len, uint8_t doirq);
 void i8042_init(CPU_t* cpu, I8259_t* i8259);
 
 #endif

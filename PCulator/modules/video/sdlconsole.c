@@ -20,11 +20,11 @@
 #include "../../config.h"
 
 #ifdef _WIN32
-#include <SDL/SDL.h>
-#include <SDL/SDL_syswm.h>
+#include "SDL.h"
+#include "SDL_syswm.h"
 #include <Windows.h>
 #else
-#include <SDL.h>
+#include "SDL.h"
 #endif
 #include <stdio.h>
 #include <stdint.h>
@@ -165,6 +165,14 @@ void sdlconsole_mousegrab() {
 	}
 }
 
+static size_t ustrlen(const void *s)
+{
+	size_t i = 0;
+	while (((const unsigned char *)s)[i] != '\0')
+		++i;
+	return i;
+}
+
 int sdlconsole_loop() {
 	SDL_Event event;
 	int8_t xrel, yrel;
@@ -218,7 +226,7 @@ int sdlconsole_loop() {
 						i8042_buffer_key_data(&key, 1, 1);
 					}
 					else { //native set 2 mode
-						i8042_buffer_key_data(sdlconsole_scancodesMakeSet2[sdlconsole_curkey], strlen(sdlconsole_scancodesMakeSet2[sdlconsole_curkey]), 1);
+						i8042_buffer_key_data(sdlconsole_scancodesMakeSet2[sdlconsole_curkey], ustrlen(sdlconsole_scancodesMakeSet2[sdlconsole_curkey]), 1);
 					}
 					return SDLCONSOLE_EVENT_NONE; //main loop won't handle the AT key interruptss
 				}
@@ -241,7 +249,7 @@ int sdlconsole_loop() {
 				}
 				else { //native set 2 mode
 					sdlconsole_curkey = sdlconsole_translateScancodeSet2(event.key.keysym.sym, 1);
-					i8042_buffer_key_data(sdlconsole_scancodesBreakSet2[sdlconsole_curkey], strlen(sdlconsole_scancodesBreakSet2[sdlconsole_curkey]), 1);
+					i8042_buffer_key_data(sdlconsole_scancodesBreakSet2[sdlconsole_curkey], ustrlen(sdlconsole_scancodesBreakSet2[sdlconsole_curkey]), 1);
 				}
 				return SDLCONSOLE_EVENT_NONE;
 			}

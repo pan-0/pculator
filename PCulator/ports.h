@@ -13,7 +13,7 @@ extern void (*ports_cbWriteW[PORTS_COUNT])(void* udata, uint32_t portnum, uint16
 extern void (*ports_cbWriteL[PORTS_COUNT])(void* udata, uint32_t portnum, uint32_t value);
 extern void* ports_udata[PORTS_COUNT];
 
-void ports_cbRegister(uint32_t start, uint32_t count, uint8_t(*readb)(void*, uint16_t), uint16_t(*readw)(void*, uint16_t), void (*writeb)(void*, uint16_t, uint8_t), void (*writew)(void*, uint16_t, uint16_t), void* udata);
+void ports_cbRegister(uint32_t start, uint32_t count, uint8_t(*readb)(void*, uint32_t), uint16_t(*readw)(void*, uint32_t), void (*writeb)(void*, uint32_t, uint8_t), void (*writew)(void*, uint32_t, uint16_t), void* udata);
 void ports_init();
 
 #endif

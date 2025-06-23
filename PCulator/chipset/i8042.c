@@ -1,13 +1,14 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>  /* memcpy(), memmmove() */
 #include "i8042.h"
 #include "../config.h"
 #include "../debuglog.h"
 #include "../ports.h"
 i8042_t kbc;
 
-void i8042_buffer_key_data(uint8_t* data, uint8_t len, uint8_t doirq) {
+void i8042_buffer_key_data(const uint8_t* data, uint8_t len, uint8_t doirq) {
     kbc.keyboard_enabled = 1; //hack
     if (!kbc.keyboard_enabled || len == 0 || len > sizeof(kbc.data_buffer)) return;
 

@@ -23,7 +23,11 @@ void vga_blinkCallback(void* dummy);
 void vga_hblankCallback(void* dummy);
 void vga_hblankEndCallback(void* dummy);
 void vga_drawCallback(void* dummy);
+#ifdef _WIN32
 void vga_renderThread(void* cpu);
+#else
+void *vga_renderThread(void* cpu);
+#endif
 void vga_writememory(void* dummy, uint32_t addr, uint8_t value);
 uint8_t vga_readmemory(void* dummy, uint32_t addr);
 void vga_dumpregs();

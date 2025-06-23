@@ -17,16 +17,18 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <stdlib.h>  /* exit() */
 #include <string.h>
 #include "cpu.h"
 #include "fpu.h"
 #include "../config.h"
 #include "../memory.h"
 #include "../debuglog.h"
-#include "../udis86.h"
+#include "../../udis86.h"
 
 const uint8_t byteregtable[8] = { regal, regcl, regdl, regbl, regah, regch, regdh, regbh };
 
@@ -268,6 +270,7 @@ FUNC_INLINE uint16_t getreg16(CPU_t* cpu, uint8_t reg) {
 	case 5: return cpu->regs.wordregs[regbp];
 	case 6: return cpu->regs.wordregs[regsi];
 	case 7: return cpu->regs.wordregs[regdi];
+	default: UNREACHABLE();
 	}
 }
 
@@ -281,6 +284,7 @@ FUNC_INLINE uint32_t getreg32(CPU_t* cpu, uint8_t reg) {
 	case 5: return cpu->regs.longregs[regebp];
 	case 6: return cpu->regs.longregs[regesi];
 	case 7: return cpu->regs.longregs[regedi];
+	default: UNREACHABLE();
 	}
 }
 
@@ -294,6 +298,7 @@ FUNC_INLINE void putreg16(CPU_t* cpu, uint8_t reg, uint16_t writeval) {
 	case 5: cpu->regs.wordregs[regbp] = writeval; break;
 	case 6: cpu->regs.wordregs[regsi] = writeval; break;
 	case 7: cpu->regs.wordregs[regdi] = writeval; break;
+	default: UNREACHABLE();
 	}
 }
 
@@ -307,6 +312,7 @@ FUNC_INLINE void putreg32(CPU_t* cpu, uint8_t reg, uint32_t writeval) {
 	case 5: cpu->regs.longregs[regebp] = writeval; break;
 	case 6: cpu->regs.longregs[regesi] = writeval; break;
 	case 7: cpu->regs.longregs[regedi] = writeval; break;
+	default: UNREACHABLE();
 	}
 }
 
@@ -318,6 +324,7 @@ FUNC_INLINE uint32_t getsegreg(CPU_t* cpu, uint8_t reg) {
 	case 3: return cpu->segregs[regds];
 	case 4: return cpu->segregs[regfs];
 	case 5: return cpu->segregs[reggs];
+	default: UNREACHABLE();
 	}
 }
 
@@ -331,6 +338,7 @@ FUNC_INLINE void putsegreg(CPU_t* cpu, uint8_t reg, uint32_t writeval) {
 		if (((uint32_t)seg + 7) > ((writeval & 4) ? cpu->ldtl : cpu->gdtl)) { //Selector outside table limit
 			fault = 1;
 			if (showops) debug_log(DEBUG_DETAIL, "Selector %04X offset outside %s limit (%lu > %lu)\n", writeval, (writeval & 4) ? "LDT" : "GDT", (uint32_t)seg, (writeval & 4) ? cpu->ldtl : cpu->gdtl);
+			gdtidx = 0;
 		}
 		else {
 			gdtidx = ((writeval & 4) ? cpu->ldtr : cpu->gdtr) + (uint32_t)seg;
@@ -2182,7 +2190,7 @@ void cpu_int15_handler(CPU_t* cpu) {
 		source = cpu_readl(cpu, table + 0x12) & 0xFFFFFF;
 		dest = cpu_readl(cpu, table + 0x1A) & 0xFFFFFF;
 		len = (uint32_t)cpu_readw(cpu, table + 0x10) + 1; // (uint32_t)cpu->regs.wordregs[regcx] * 2;
-		printf("Copy from %08X -> %08X (len %lu)\n", source, dest, len);
+		printf("Copy from %08X -> %08X (len %"PRIu32")\n", source, dest, len);
 		for (i = 0; i < len; i++) {
 			uint8_t val;
 			val = cpu_read(cpu, source + i);
@@ -3905,8 +3913,8 @@ void op_ext_AF(CPU_t* cpu) {
 	modregrm(cpu);
 	int32_t src, dst;
 	int64_t result;
-	src = cpu->isoper32 ? readrm32(cpu, cpu->rm) : (int32_t)(int16_t)readrm16(cpu, cpu->rm);
-	dst = cpu->isoper32 ? getreg32(cpu, cpu->reg) : (int32_t)(int16_t)getreg16(cpu, cpu->reg);
+	src = cpu->isoper32 ? (int32_t)readrm32(cpu, cpu->rm) : (int16_t)readrm16(cpu, cpu->rm);
+	dst = cpu->isoper32 ? (int32_t)getreg32(cpu, cpu->reg) : (int16_t)getreg16(cpu, cpu->reg);
 	result = (int64_t)dst * (int64_t)src;
 	if (cpu->isoper32) {
 		putreg32(cpu, cpu->reg, (uint32_t)result);

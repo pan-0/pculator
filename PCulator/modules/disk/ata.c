@@ -1,3 +1,14 @@
+#ifdef _WIN32
+#	define xfseek _fseeki64
+#	define xftell _ftelli64
+#else
+#	/* NOTE: `-D_FILE_OFFSET_BITS=64` must be passed to the compiler! */
+#	if !defined _FILE_OFFSET_BITS || _FILE_OFFSET_BITS != 64
+#		error "fseek64 not supported"
+#	endif
+#	define xfseek fseek
+#	define xftell ftell
+#endif
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -30,7 +41,7 @@ void ata_irq() {
 	timing_timerEnable(ata.timernum);
 }
 
-void ata_swap_string(uint8_t* str) {
+void ata_swap_string(const char* str) {
 	int i;
 	memcpy(ata_swap, str, 20);
 	for (i = 0; i < 20; i += 2) {
@@ -64,7 +75,7 @@ uint8_t ata_gen_status() {
 void ata_read_disk() {
 	uint32_t curlba;
 	if (ata.disk[ata.select].lbamode) {
-		_fseeki64(ata.disk[ata.select].diskfile, ata.disk[ata.select].regs.lba++ * 512LU, SEEK_SET);
+		xfseek(ata.disk[ata.select].diskfile, ata.disk[ata.select].regs.lba++ * 512LU, SEEK_SET);
 		fread(ata.disk[ata.select].buffer, 1, 512, ata.disk[ata.select].diskfile);
 		ata.disk[ata.select].error = 0;
 		ata.disk[ata.select].buffer_pos = 0;
@@ -72,7 +83,7 @@ void ata_read_disk() {
 	}
 	else {
 		curlba = ((ata.disk[ata.select].curcyl * (uint32_t)ata.disk[ata.select].heads + ata.disk[ata.select].curhead) * (uint32_t)ata.disk[ata.select].spt + (ata.disk[ata.select].cursect - 1));
-		_fseeki64(ata.disk[ata.select].diskfile, curlba * 512LU, SEEK_SET);
+		xfseek(ata.disk[ata.select].diskfile, curlba * 512LU, SEEK_SET);
 		fread(ata.disk[ata.select].buffer, 1, 512, ata.disk[ata.select].diskfile);
 		ata.disk[ata.select].error = 0;
 		ata.disk[ata.select].buffer_pos = 0;
@@ -101,7 +112,7 @@ void ata_write_disk() {
 	uint32_t curlba;
 	uint16_t i;
 	if (ata.disk[ata.select].lbamode) {
-		_fseeki64(ata.disk[ata.select].diskfile, ata.disk[ata.select].regs.lba++ * 512LU, SEEK_SET);
+		xfseek(ata.disk[ata.select].diskfile, ata.disk[ata.select].regs.lba++ * 512LU, SEEK_SET);
 		fwrite(ata.disk[ata.select].buffer, 1, 512, ata.disk[ata.select].diskfile);
 		ata.disk[ata.select].error = 0;
 		ata.disk[ata.select].buffer_pos = 0;
@@ -109,7 +120,7 @@ void ata_write_disk() {
 	}
 	else {
 		curlba = ((ata.disk[ata.select].curcyl * (uint32_t)ata.disk[ata.select].heads + ata.disk[ata.select].curhead) * (uint32_t)ata.disk[ata.select].spt + (ata.disk[ata.select].cursect - 1));
-		_fseeki64(ata.disk[ata.select].diskfile, curlba * 512LU, SEEK_SET);
+		xfseek(ata.disk[ata.select].diskfile, curlba * 512LU, SEEK_SET);
 		fwrite(ata.disk[ata.select].buffer, 1, 512, ata.disk[ata.select].diskfile);
 		ata.disk[ata.select].error = 0;
 		ata.disk[ata.select].buffer_pos = 0;
@@ -325,7 +336,7 @@ void ata_command_process() {
 	}
 }
 
-uint8_t ata_read_port(void* dummy, uint16_t portnum) {
+uint8_t ata_read_port(void* dummy, uint32_t portnum) {
 	uint8_t ret = 0;
 	switch (portnum) {
 	case ATA_PORT_DATA:
@@ -382,7 +393,7 @@ uint8_t ata_read_port(void* dummy, uint16_t portnum) {
 	return ret;
 }
 
-void ata_write_port(void* dummy, uint16_t portnum, uint8_t value) {
+void ata_write_port(void* dummy, uint32_t portnum, uint8_t value) {
 	//printf("[ATA] Write port 0x%X <- 0x%02X\n", portnum, value);
 	switch (portnum) {
 	case ATA_PORT_DATA:
@@ -430,7 +441,7 @@ void ata_write_port(void* dummy, uint16_t portnum, uint8_t value) {
 	}
 }
 
-uint16_t ata_read_data(void* dummy, uint16_t portnum) {
+uint16_t ata_read_data(void* dummy, uint32_t portnum) {
 	uint16_t ret;
 	//printf("[ATA] Read data from 16-bit data port\n");
 	if (ata.disk[ata.select].buffer_pos >= 512 || !ata.disk[ata.select].isreading) return 0;
@@ -452,7 +463,7 @@ uint16_t ata_read_data(void* dummy, uint16_t portnum) {
 	return ret;
 }
 
-void ata_write_data(void* dummy, uint16_t portnum, uint16_t value) {
+void ata_write_data(void* dummy, uint32_t portnum, uint16_t value) {
 	//printf("[ATA] Write data to 16-bit data port\n");
 	if (ata.disk[ata.select].buffer_pos >= 512 || !ata.disk[ata.select].iswriting) return;
 	ata.disk[ata.select].buffer[ata.disk[ata.select].buffer_pos] = value & 0xFF;
@@ -470,8 +481,8 @@ int ata_insert_disk(int select, char* filename) {
 	uint32_t chs_total;
 	ata.disk[select].diskfile = fopen(filename, "r+b");
 	if (ata.disk[select].diskfile == NULL) return 0;
-	_fseeki64(ata.disk[select].diskfile, 0, SEEK_END);
-	ata.disk[select].sectors = _ftelli64(ata.disk[select].diskfile) / 512UL;
+	xfseek(ata.disk[select].diskfile, 0, SEEK_END);
+	ata.disk[select].sectors = xftell(ata.disk[select].diskfile) / 512UL;
 	ata.disk[select].spt = 63;
 	ata.disk[select].heads = 16;
 	ata.disk[select].cylinders = ata.disk[select].sectors / (16L * 63L);

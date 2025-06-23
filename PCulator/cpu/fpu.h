@@ -155,7 +155,8 @@ void FpuPush(struct Machine*, double);
 void FpuSetTag(struct Machine*, unsigned, unsigned);
 void OpFinit(struct Machine*);
 void OpFpu(); // P);
-void OpFwait(P);
+//void OpFwait(P);
+void OpFwait(struct Machine *m, u64 rde, i64 disp, u64 uimm0);
 void fpunew_init(CPU_t* cpu);
 
 #endif

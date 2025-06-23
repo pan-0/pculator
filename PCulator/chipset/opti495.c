@@ -135,7 +135,7 @@ opti495_recalc(opti495_t *dev)
     //flushmmucache();
 }
 
-void opti495_write(void* priv, uint16_t addr, uint8_t val)
+void opti495_write(void* priv, uint32_t addr, uint8_t val)
 {
     opti495_t *dev = &opti495;
 
@@ -183,7 +183,7 @@ void opti495_write(void* priv, uint16_t addr, uint8_t val)
     }
 }
 
-uint8_t opti495_read(void* priv, uint16_t addr)
+uint8_t opti495_read(void* priv, uint32_t addr)
 {
     uint8_t    ret = 0xff;
     opti495_t *dev = &opti495;

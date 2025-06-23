@@ -53,6 +53,7 @@
 #include "modules/io/tcpmodem.h"
 #include "modules/video/cga.h"
 #include "modules/video/vga.h"
+#include "modules/video/text.h"
 #include "rtc.h"
 #include "cmosrtc.h"
 #include "memory.h"
@@ -233,7 +234,7 @@ int machine_init_generic_xt(MACHINE_t* machine) {
 	if (machine->hwflags & MACHINE_HW_NE2000) {
 		ne2000_init(&machine->ne2000, &machine->i8259, 0x300, 2, (uint8_t*)&mac);
 		if (machine->pcap_if > -1) {
-			if (pcap_init(&machine->ne2000, machine->pcap_if)) {
+			if (pcap_xinit(&machine->ne2000, machine->pcap_if)) {
 				return -1;
 			}
 		}
@@ -335,7 +336,7 @@ int machine_init_asus_386(MACHINE_t* machine) {
 	if (machine->hwflags & MACHINE_HW_NE2000) {
 		ne2000_init(&machine->ne2000, &machine->i8259, 0x300, 2, (uint8_t*)&mac);
 		if (machine->pcap_if > -1) {
-			if (pcap_init(&machine->ne2000, machine->pcap_if)) {
+			if (pcap_xinit(&machine->ne2000, machine->pcap_if)) {
 				return -1;
 			}
 		}
@@ -438,7 +439,7 @@ int machine_init_opti495(MACHINE_t* machine) {
 	if (machine->hwflags & MACHINE_HW_NE2000) {
 		ne2000_init(&machine->ne2000, &machine->i8259, 0x300, 7, (uint8_t*)&mac);
 		if (machine->pcap_if > -1) {
-			if (pcap_init(&machine->ne2000, machine->pcap_if)) {
+			if (pcap_xinit(&machine->ne2000, machine->pcap_if)) {
 				return -1;
 			}
 		}
@@ -541,7 +542,7 @@ int machine_init_opti5x7(MACHINE_t* machine) {
 	if (machine->hwflags & MACHINE_HW_NE2000) {
 		ne2000_init(&machine->ne2000, &machine->i8259, 0x300, 7, (uint8_t*)&mac);
 		if (machine->pcap_if > -1) {
-			if (pcap_init(&machine->ne2000, machine->pcap_if)) {
+			if (pcap_xinit(&machine->ne2000, machine->pcap_if)) {
 				return -1;
 			}
 		}
@@ -616,6 +617,7 @@ int machine_init(MACHINE_t* machine, char* id) {
 			ret = utility_loadFile(temp, machine_mem[num][i].size, machine_mem[num][i].filename);
 			if ((machine_mem[num][i].required == MACHINE_ROM_REQUIRED) && ret) {
 				debug_log(DEBUG_ERROR, "[MACHINE] Could not open file, or size is less than expected: %s\r\n", machine_mem[num][i].filename);
+				free(temp);
 				return -1;
 			}
 			memory_mapRegister(machine_mem[num][i].start, machine_mem[num][i].size, temp, NULL);
@@ -627,6 +629,7 @@ int machine_init(MACHINE_t* machine, char* id) {
 			ret = utility_loadFile(temp2, machine_mem[num][i].size >> 1, machine_mem[num][i].filename);
 			if ((machine_mem[num][i].required == MACHINE_ROM_REQUIRED) && ret) {
 				debug_log(DEBUG_ERROR, "[MACHINE] Could not open file, or size is less than expected: %s\r\n", machine_mem[num][i].filename);
+				free(temp2);
 				return -1;
 			}
 			for (j = 0; j < (machine_mem[num][i].size >> 1); j++) {
@@ -642,6 +645,7 @@ int machine_init(MACHINE_t* machine, char* id) {
 			ret = utility_loadFile(temp2, machine_mem[num][i].size >> 1, machine_mem[num][i].filename);
 			if ((machine_mem[num][i].required == MACHINE_ROM_REQUIRED) && ret) {
 				debug_log(DEBUG_ERROR, "[MACHINE] Could not open file, or size is less than expected: %s\r\n", machine_mem[num][i].filename);
+				free(temp2);
 				return -1;
 			}
 			for (j = 0; j < (machine_mem[num][i].size >> 1); j++) {

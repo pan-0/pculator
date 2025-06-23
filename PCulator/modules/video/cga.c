@@ -237,7 +237,7 @@ void cga_update(uint32_t start_x, uint32_t start_y, uint32_t end_x, uint32_t end
 	sdlconsole_blit((uint32_t *)cga_framebuffer, 640, 400, 640 * sizeof(uint32_t));
 }
 
-void cga_renderThread(void* dummy) {
+static void renderThread(void* dummy) {
 	while (running) {
 		if (cga_doDraw == 1) {
 			cga_update(0, 0, 639, 399);
@@ -253,6 +253,19 @@ void cga_renderThread(void* dummy) {
 	pthread_exit(NULL);
 #endif
 }
+
+#ifdef _WIN32
+void cga_renderThread(void* dummy)
+{
+	renderThread(dummy);
+}
+#else
+void *cga_renderThread(void *dummy)
+{
+	renderThread(dummy);
+	return NULL;
+}
+#endif
 
 void cga_writeport(void* dummy, uint16_t port, uint8_t value) {
 #ifdef DEBUG_CGA

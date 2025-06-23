@@ -48,8 +48,20 @@
 #define FUNC_FORCE_INLINE __forceinline
 #define FUNC_INLINE inline
 #else
-#define FUNC_FORCE_INLINE __attribute__((always_inline))
-#define FUNC_INLINE inline
+/*
+ * TODO: Unfortunately, C99 `inline` semantics don't permit the current code
+ * as-is.
+ */
+//#define FUNC_FORCE_INLINE __attribute__((always_inline))
+//#define FUNC_INLINE inline
+#define FUNC_FORCE_INLINE
+#define FUNC_INLINE
+#endif
+
+#ifdef __GNUC__
+#define UNREACHABLE() __builtin_unreachable()
+#else
+#define UNREACHABLE()
 #endif
 
 #ifndef _WIN32

@@ -2,9 +2,9 @@
 #define _SDLAUDIO_H_
 
 #ifdef _WIN32
-#include <SDL/SDL.h>
+#include "SDL.h"
 #else
-#include <SDL.h>
+#include "SDL.h"
 #endif
 #include "../../machine.h"
 

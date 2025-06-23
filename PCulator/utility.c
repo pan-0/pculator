@@ -30,19 +30,18 @@
 #include "memory.h"
 #include "debuglog.h"
 
-int utility_loadFile(uint8_t* dst, size_t len, char* srcfile) {
+int utility_loadFile(uint8_t* dst, size_t len, const char* srcfile) {
 	FILE* file;
 	if (dst == NULL) {
 		return -1;
 	}
 
+	debug_log(DEBUG_INFO, "[FS] Opening file at: \"%s\"\r\n", srcfile);
 	file = fopen(srcfile, "rb");
 	if (file == NULL) {
-		free(dst);
 		return -1;
 	}
 	if (fread(dst, 1, len, file) < len) {
-		free(dst);
 		fclose(file);
 		return -1;
 	}

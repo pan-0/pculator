@@ -25,7 +25,6 @@
 #include <Windows.h>
 #else
 #include <pthread.h>
-pthread_t cga_renderThreadID;
 #endif
 #include "text.h"
 #include "../../config.h"
@@ -39,7 +38,9 @@ pthread_t cga_renderThreadID;
 uint16_t text_cursorloc = 0;
 uint8_t text_indexreg = 0, text_datareg[256], text_regs[16];
 uint8_t* text_RAM = NULL;
+#ifdef _WIN32
 HANDLE text_handle;
+#endif
 
 int text_init() {
 	int x, y;
@@ -52,7 +53,9 @@ int text_init() {
 		return -1;
 	}
 
+#ifdef _WIN32
 	text_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
 
 	timing_addTimer(text_scanlineCallback, NULL, 62800, TIMING_ENABLED);
 	ports_cbRegister(0x3D0, 16, (void*)text_readport, NULL, (void*)text_writeport, NULL, NULL);
@@ -95,8 +98,10 @@ uint8_t text_readport(void* dummy, uint16_t port) {
 }
 
 void text_writememory(void* dummy, uint32_t addr, uint8_t value) {
+#ifdef _WIN32
 	COORD pos;
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+#endif
 
 	addr -= 0xB8000;
 	if (addr >= 16384) return;
@@ -104,9 +109,11 @@ void text_writememory(void* dummy, uint32_t addr, uint8_t value) {
 	text_RAM[addr] = value;
 	if (addr >= 4000) return;
 	if ((addr & 1) == 0) {
+#ifdef _WIN32
 		pos.Y = (addr / 160);
 		pos.X = (addr % 160) >> 1;
 		SetConsoleCursorPosition(text_handle, pos);
+#endif
 		printf("%c", value);
 		fflush(stdout);
 	}

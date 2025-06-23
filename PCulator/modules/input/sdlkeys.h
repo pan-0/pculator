@@ -3,9 +3,9 @@
 
 #include <stdint.h>
 #ifdef _WIN32
-#include <SDL/SDL.h>
+#include "SDL.h"
 #else
-#include <SDL.h>
+#include "SDL.h"
 #endif
 
 //Scancodes set 1 (XT style)

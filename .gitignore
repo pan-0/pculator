@@ -24,3 +24,6 @@ _ReSharper*/
 *.dll
 /cmos.bin
 cmos/*.bin
+build/
+tags*
+trash/

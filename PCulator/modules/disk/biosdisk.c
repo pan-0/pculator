@@ -31,6 +31,7 @@
 #include "biosdisk.h"
 #include "../../cpu/cpu.h"
 #include "../../debuglog.h"
+#include "../../memory.h"
 
 DISK_t biosdisk[4];
 uint8_t biosdisk_sectbuf[512];

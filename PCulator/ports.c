@@ -47,12 +47,12 @@ void* ports_udata[PORTS_COUNT];*/
 struct ports_s {
 	uint32_t start;
 	uint32_t size;
-	uint8_t(*readcb)(void* udata, uint16_t addr);
-	uint16_t(*readcbW)(void* udata, uint16_t addr);
-	uint32_t(*readcbL)(void* udata, uint16_t addr);
-	void (*writecb)(void* udata, uint16_t addr, uint8_t value);
-	void (*writecbW)(void* udata, uint16_t addr, uint16_t value);
-	void (*writecbL)(void* udata, uint16_t addr, uint32_t value);
+	uint8_t(*readcb)(void* udata, uint32_t addr);
+	uint16_t(*readcbW)(void* udata, uint32_t addr);
+	uint32_t(*readcbL)(void* udata, uint32_t addr);
+	void (*writecb)(void* udata, uint32_t addr, uint8_t value);
+	void (*writecbW)(void* udata, uint32_t addr, uint16_t value);
+	void (*writecbL)(void* udata, uint32_t addr, uint32_t value);
 	void* udata;
 	int used;
 } ports[64];
@@ -108,20 +108,20 @@ uint8_t piix4_config[64] = {
 	// 0x1C: BAR3 = Secondary Control: 0x376
 	0x75, 0x03, 0x00, 0x00,
 
-	// 0x20–0x23: BAR4/5 (not used)
+	// 0x20<96>0x23: BAR4/5 (not used)
 	0x00, 0x00, 0x00, 0x00,
 
-	// 0x24–0x33: Reserved/unused
+	// 0x24<96>0x33: Reserved/unused
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	// 0x34–0x3B: Reserved/unused
+	// 0x34<96>0x3B: Reserved/unused
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
 	// 0x3C: IRQ line & pin
 	0x0E, 0x01,             // IRQ line = 14, pin = INTA#
 
-	// 0x3E–0x3F: Min Gnt / Max Lat (optional)
+	// 0x3E<96>0x3F: Min Gnt / Max Lat (optional)
 	0x00, 0x00
 };
 
@@ -143,7 +143,7 @@ uint32_t pci_read_0xcfc() {
 	uint8_t func = (pci_config_address >> 8) & 0x07;
 	uint8_t offset = pci_config_address & 0xFC;
 	int idx = ((bus << 8) | (device << 3) | func);
-	printf("PCI read CFC, cfg idx = %lu\n", idx);
+	printf("PCI read CFC, cfg idx = %d\n", idx);
 	return *(uint32_t*)&pci_config_space[idx * 256 + offset];
 }
 
@@ -337,7 +337,7 @@ uint32_t port_readl(CPU_t* cpu, uint16_t portnum) {
 	return ret;
 }
 
-void ports_cbRegister(uint32_t start, uint32_t count, uint8_t (*readb)(void*, uint16_t), uint16_t (*readw)(void*, uint16_t), void (*writeb)(void*, uint16_t, uint8_t), void (*writew)(void*, uint16_t, uint16_t), void* udata) {
+void ports_cbRegister(uint32_t start, uint32_t count, uint8_t (*readb)(void*, uint32_t), uint16_t (*readw)(void*, uint32_t), void (*writeb)(void*, uint32_t, uint8_t), void (*writew)(void*, uint32_t, uint16_t), void* udata) {
 /*	uint32_t i;
 	for (i = 0; i < count; i++) {
 		if ((start + i) >= PORTS_COUNT) {

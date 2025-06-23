@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>  /* exit() */
 #ifdef _WIN32
 #include <process.h>
 #else
@@ -87,7 +88,7 @@ void pcap_listdevs() {
 	pcap_freealldevs(alldevs);
 }
 
-int pcap_init(NE2000_t* ne2000, int dev) {
+int pcap_xinit(NE2000_t* ne2000, int dev) {
 	pcap_if_t* alldevs;
 	pcap_if_t* d;
 	int i = 0;

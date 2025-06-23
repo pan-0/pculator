@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "config.h"
 #include "timing.h"
 #include "machine.h"

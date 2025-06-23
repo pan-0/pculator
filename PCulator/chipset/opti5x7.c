@@ -89,7 +89,7 @@ opti5x7_shadow_map(int cur_reg, opti5x7_t *dev)
 }
 
 static void
-opti5x7_write(void* priv, uint16_t addr, uint8_t val)
+opti5x7_write(void* priv, uint32_t addr, uint8_t val)
 {
     opti5x7_t *dev = (opti5x7_t *) priv;
 
@@ -147,7 +147,7 @@ opti5x7_write(void* priv, uint16_t addr, uint8_t val)
 }
 
 static uint8_t
-opti5x7_read(void* priv, uint16_t addr)
+opti5x7_read(void* priv, uint32_t addr)
 {
     const opti5x7_t *dev = (opti5x7_t *) priv;
 

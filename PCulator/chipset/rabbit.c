@@ -1,3 +1,4 @@
+#include <stddef.h>  /* NULL */
 #include <stdint.h>
 #include "../ports.h"
 #include "../debuglog.h"

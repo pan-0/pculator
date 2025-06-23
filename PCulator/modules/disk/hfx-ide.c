@@ -1,3 +1,4 @@
+#if 0
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -1998,3 +1999,5 @@ void ide_init(struct pc_settings* pc)
         ctrl->type[drive_id] = info->type;
     }
 }
+#endif
+

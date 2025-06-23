@@ -110,8 +110,10 @@ static void ne2000_reset(NE2000_t* ne2000, int type)
 // The first 16 bytes contains the MAC address at even locations,
 // and there is 16K of buffer memory starting at 16K
 //
-uint8_t ne2000_chipmem_read_b(NE2000_t* ne2000, uint32_t address)
+uint8_t ne2000_chipmem_read_b(void* ptr, uint32_t address)
 {
+	NE2000_t* ne2000 = ptr;
+
     // ROM'd MAC address
     if ((address >= 0) && (address <= 31)) {
         return ne2000->macaddr[address];
@@ -126,8 +128,10 @@ uint8_t ne2000_chipmem_read_b(NE2000_t* ne2000, uint32_t address)
 }
 
 
-uint16_t ne2000_chipmem_read_w(NE2000_t* ne2000, uint32_t address)
+uint16_t ne2000_chipmem_read_w(void* ptr, uint32_t address)
 {
+	NE2000_t* ne2000 = ptr;
+
     // ROM'd MAC address
     if ((address >= 0) && (address <= 31)) {
         return le16_to_cpu(*(uint16_t*)(ne2000->macaddr + address));
@@ -141,16 +145,20 @@ uint16_t ne2000_chipmem_read_w(NE2000_t* ne2000, uint32_t address)
     }
 }
 
-void ne2000_chipmem_write_b(NE2000_t* ne2000, uint32_t address, uint8_t value)
+void ne2000_chipmem_write_b(void* ptr, uint32_t address, uint8_t value)
 {
+	NE2000_t* ne2000 = ptr;
+
     if ((address >= NE2K_MEMSTART) && (address < NE2K_MEMEND)) {
         ne2000->mem[address - NE2K_MEMSTART] = value & 0xff;
     }
 }
 
 
-void ne2000_chipmem_write_w(NE2000_t* ne2000, uint32_t address, uint16_t value)
+void ne2000_chipmem_write_w(void* ptr, uint32_t address, uint16_t value)
 {
+	NE2000_t* ne2000 = ptr;
+
     if ((address >= NE2K_MEMSTART) && (address < NE2K_MEMEND)) {
         *(uint16_t*)(ne2000->mem + (address - NE2K_MEMSTART)) = cpu_to_le16(value);
     }
@@ -193,8 +201,10 @@ uint16_t ne2000_dma_read(NE2000_t* ne2000, int io_len)
     return (0);
 }
 
-uint16_t ne2000_asic_read_w(NE2000_t* ne2000, uint32_t offset)
+uint16_t ne2000_asic_read_w(void* ptr, uint32_t offset)
 {
+	NE2000_t* ne2000 = ptr;
+
     int retval;
 
     if (ne2000->DCR.wdsize & 0x01) {
@@ -236,8 +246,10 @@ void ne2000_dma_write(NE2000_t* ne2000, int io_len)
     }
 }
 
-void ne2000_asic_write_w(NE2000_t* ne2000, uint32_t offset, uint16_t value)
+void ne2000_asic_write_w(void* ptr, uint32_t offset, uint16_t value)
 {
+	NE2000_t* ne2000 = ptr;
+
 #ifdef DEBUG_NE2000
     debug_log(DEBUG_DETAIL, "[NE2000] asic write val=0x%04x\n", value);
 #endif
@@ -256,28 +268,33 @@ void ne2000_asic_write_w(NE2000_t* ne2000, uint32_t offset, uint16_t value)
     }
 }
 
-uint8_t ne2000_asic_read_b(NE2000_t* ne2000, uint32_t offset)
+uint8_t ne2000_asic_read_b(void* ptr, uint32_t offset)
 {
+	NE2000_t* ne2000 = ptr;
+
     if (offset & 1)
         return ne2000_asic_read_w(ne2000, offset & ~1) >> 1;
     return ne2000_asic_read_w(ne2000, offset) & 0xff;
 }
 
-void ne2000_asic_write_b(NE2000_t* ne2000, uint32_t offset, uint8_t value)
+void ne2000_asic_write_b(void* ptr, uint32_t offset, uint8_t value)
 {
+	NE2000_t* ne2000 = ptr;
+
     if (offset & 1)
         ne2000_asic_write_w(ne2000, offset & ~1, value << 8);
     else
         ne2000_asic_write_w(ne2000, offset, value);
 }
 
-uint8_t ne2000_reset_read(NE2000_t* ne2000, uint32_t offset)
+uint8_t ne2000_reset_read(void* ptr, uint32_t offset)
 {
+	NE2000_t* ne2000 = ptr;
     ne2000_reset(ne2000, NE2K_RESET_SOFTWARE);
     return 0;
 }
 
-void ne2000_reset_write(NE2000_t* ne2000, uint32_t offset, uint8_t value)
+void ne2000_reset_write(void* ptr, uint32_t offset, uint8_t value)
 {
 }
 
@@ -286,9 +303,10 @@ void ne2000_reset_write(NE2000_t* ne2000, uint32_t offset, uint8_t value)
 // mainline when the CPU attempts a read in the i/o space registered
 // by this ne2000 instance
 //
-uint8_t ne2000_read(NE2000_t* ne2000, uint32_t address)
+uint8_t ne2000_read(void* ptr, uint32_t address)
 {
-    int ret;
+	NE2000_t* ne2000 = ptr;
+    int ret = 0;
 
 #ifdef DEBUG_NE2000
     debug_log(DEBUG_DETAIL, "[NE2000] read addr %x\n", address);
@@ -559,8 +577,10 @@ uint8_t ne2000_read(NE2000_t* ne2000, uint32_t address)
 // mainline when the CPU attempts a write in the i/o space registered
 // by this ne2000 instance
 //
-void ne2000_write(NE2000_t* ne2000, uint32_t address, uint8_t value)
+void ne2000_write(void* ptr, uint32_t address, uint8_t value)
 {
+	NE2000_t* ne2000 = ptr;
+
 #ifdef DEBUG_NE2000
     debug_log(DEBUG_DETAIL, "[NE2000] write address %x, val=%x\n", address, value);
 #endif

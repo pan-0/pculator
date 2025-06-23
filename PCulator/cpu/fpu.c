@@ -32,16 +32,16 @@
 
 #include "../memory.h"
 
-/*#include "blink/builtin.h"
-#include "blink/case.h"
-#include "blink/endian.h"
-#include "blink/flags.h"
-#include "blink/ldbl.h"
-#include "blink/machine.h"
-#include "blink/macros.h"
-#include "blink/modrm.h"
-#include "blink/pun.h"
-#include "blink/rde.h"*/
+/*#include "blink/builtin.h"*/
+/*#include "blink/case.h"*/
+/*#include "blink/endian.h"*/
+/*#include "blink/flags.h"*/
+/*#include "blink/ldbl.h"*/
+/*#include "blink/machine.h"*/
+/*#include "blink/macros.h"*/
+/*#include "blink/modrm.h"*/
+/*#include "blink/pun.h"*/
+/*#include "blink/rde.h"*/
 
 #define __builtin_unreachable() {}
 
@@ -68,8 +68,8 @@
   case x:          \
     return y
 
-#define ModrmRm(x) m->cpu->rm
-#define ModrmReg(x) m->cpu->reg
+#define IModrmRm(x) m->cpu->rm
+#define IModrmReg(x) m->cpu->reg
 #define ModrmMode(x) m->cpu->mode
 
 #ifdef MIN
@@ -225,7 +225,7 @@ static double St1(struct Machine* m) {
 }
 
 static double StRm(struct Machine* m, u64 rde) {
-    return St(m, ModrmRm(rde));
+    return St(m, IModrmRm(rde));
 }
 
 static void FpuClearRoundup(struct Machine* m) {
@@ -241,7 +241,7 @@ static void FpuSetSt0(struct Machine* m, double x) {
 }
 
 static void FpuSetStRm(struct Machine* m, u64 rde, double x) {
-    *FpuSt(m, ModrmRm(rde)) = x;
+    *FpuSt(m, IModrmRm(rde)) = x;
 }
 
 static void FpuSetStPop(struct Machine* m, int i, double x) {
@@ -250,7 +250,7 @@ static void FpuSetStPop(struct Machine* m, int i, double x) {
 }
 
 static void FpuSetStRmPop(struct Machine* m, u64 rde, double x) {
-    FpuSetStPop(m, ModrmRm(rde), x);
+    FpuSetStPop(m, IModrmRm(rde), x);
 }
 
 static i32 FpuGetMemoryInt(struct Machine* m) {
@@ -380,9 +380,8 @@ static double FpuAdd(struct Machine* m, double x, double y) {
             __builtin_unreachable();
         }
     }
-    else {
-        return NAN;
-    }
+
+    return NAN;
 }
 
 static double FpuSub(struct Machine* m, double x, double y) {
@@ -406,9 +405,8 @@ static double FpuSub(struct Machine* m, double x, double y) {
             __builtin_unreachable();
         }
     }
-    else {
-        return NAN;
-    }
+
+    return NAN;
 }
 
 static double FpuMul(struct Machine* m, double x, double y) {
@@ -421,9 +419,8 @@ static double FpuMul(struct Machine* m, double x, double y) {
             return -NAN;
         }
     }
-    else {
-        return NAN;
-    }
+
+    return NAN;
 }
 
 static double FpuDiv(struct Machine* m, double x, double y) {
@@ -442,9 +439,8 @@ static double FpuDiv(struct Machine* m, double x, double y) {
             return copysign(NAN, x);
         }
     }
-    else {
-        return NAN;
-    }
+
+    return NAN;
 }
 
 static double FpuRound(struct Machine* m, double x) {
@@ -951,7 +947,7 @@ static double Fldz(void) {
 
 static void OpFldConstant(struct Machine* m, u64 rde) {
     double x;
-    switch (ModrmRm(rde)) {
+    switch (IModrmRm(rde)) {
         CASE(0, x = Fld1());
         CASE(1, x = Fldl2t());
         CASE(2, x = Fldl2e());
@@ -1062,11 +1058,11 @@ static void OpFucomip(struct Machine* m, u64 rde) {
 }
 
 static void OpFfree(struct Machine* m, u64 rde) {
-    FpuSetTag(m, ModrmRm(rde), kFpuTagEmpty);
+    FpuSetTag(m, IModrmRm(rde), kFpuTagEmpty);
 }
 
 static void OpFfreep(struct Machine* m, u64 rde) {
-    if (ModrmRm(rde)) OpFfree(m, rde);
+    if (IModrmRm(rde)) OpFfree(m, rde);
     FpuPop(m);
 }
 
@@ -1219,7 +1215,7 @@ void OpFpu() { //P) {
     else {
         m->fpu.dp = 0;
     }
-    switch (DISP(op, ismemory, ModrmReg(rde))) {
+    switch (DISP(op, ismemory, IModrmReg(rde))) {
         CASE(DISP(0xD8, FPUREG, 0), OpFaddStEst(m, rde));
         CASE(DISP(0xD8, FPUREG, 1), OpFmulStEst(m, rde));
         CASE(DISP(0xD8, FPUREG, 2), OpFcom(m, rde));
@@ -1331,7 +1327,7 @@ void OpFpu() { //P) {
         CASE(DISP(0xDF, MEMORY, 5), OpFildll(m));
         CASE(DISP(0xDF, MEMORY, 7), OpFistpll(m));
     case DISP(0xD9, FPUREG, 4):
-        switch (ModrmRm(rde)) {
+        switch (IModrmRm(rde)) {
             CASE(0, OpFchs(m));
             CASE(1, OpFabs(m));
             CASE(4, OpFtst(m));
@@ -1341,7 +1337,7 @@ void OpFpu() { //P) {
         }
         break;
     case DISP(0xD9, FPUREG, 6):
-        switch (ModrmRm(rde)) {
+        switch (IModrmRm(rde)) {
             CASE(0, OpF2xm1(m));
             CASE(1, OpFyl2x(m));
             CASE(2, OpFptan(m));
@@ -1355,7 +1351,7 @@ void OpFpu() { //P) {
         }
         break;
     case DISP(0xD9, FPUREG, 7):
-        switch (ModrmRm(rde)) {
+        switch (IModrmRm(rde)) {
             CASE(0, OpFprem(m));
             CASE(1, OpFyl2xp1(m));
             CASE(2, OpFsqrt(m));
@@ -1369,7 +1365,7 @@ void OpFpu() { //P) {
         }
         break;
     case DISP(0xDb, FPUREG, 4):
-        switch (ModrmRm(rde)) {
+        switch (IModrmRm(rde)) {
             CASE(2, OpFnclex(m));
             CASE(3, OpFinit(m));
         default:
@@ -1389,7 +1385,7 @@ void(OpFpu)(P) {
     op = Opcode(rde) & 7;
     ismemory = ModrmMod(rde) != 3;
     m->fpu.dp = ismemory ? ComputeAddress(A) : 0;
-    switch (DISP(op, ismemory, ModrmReg(rde))) {
+    switch (DISP(op, ismemory, IModrmReg(rde))) {
         CASE(DISP(0xD9, MEMORY, 5), OpFldcw(m));
         CASE(DISP(0xD9, MEMORY, 7), OpFstcw(m));
     default:

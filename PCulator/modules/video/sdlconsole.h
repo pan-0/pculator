@@ -2,9 +2,9 @@
 #define _SDLCONSOLE_H_
 
 #ifdef _WIN32
-#include <SDL/SDL.h>
+#include "SDL.h"
 #else
-#include <SDL.h>
+#include "SDL.h"
 #endif
 
 #define SDLCONSOLE_EVENT_NONE		0

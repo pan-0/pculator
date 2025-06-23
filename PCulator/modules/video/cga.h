@@ -12,7 +12,11 @@ void cga_writeport(void* dummy, uint16_t port, uint8_t value);
 uint8_t cga_readport(void* dummy, uint16_t port);
 void cga_blinkCallback(void* dummy);
 void cga_scanlineCallback(void* dummy);
+#ifdef _WIN32
 void cga_renderThread(void* cpu);
+#else
+void *cga_renderThread(void* cpu);
+#endif
 void cga_writememory(void* dummy, uint32_t addr, uint8_t value);
 uint8_t cga_readmemory(void* dummy, uint32_t addr);
 void cga_drawCallback(void* dummy);

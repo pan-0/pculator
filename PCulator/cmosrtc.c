@@ -24,12 +24,12 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include <Windows.h>
 #include "config.h"
 #include "ports.h"
 #include "timing.h"
 #include "chipset/i8259.h"
 #include "debuglog.h"
+#include "xtime.h"
 
 uint8_t cmosrtc_index = 0;
 uint8_t cmosrtc_nvram[128];
@@ -46,13 +46,14 @@ uint8_t cmosrtc_bcd(uint8_t value) {
 double cmosrtc_rate_hz(uint8_t value) {
 	uint8_t rate_bits = value & 0x0F;
 	if (rate_bits < 1 || rate_bits > 15) return 0; // Invalid or reserved
-	return 32768.0 / pow(2.0, rate_bits - 1);
+	return (double)(32768u >> (rate_bits - 1));
+	//return 32768.0 / pow(2.0, rate_bits - 1);
 }
 
 void cmosrtc_tick(void* dummy) {
-	SYSTEMTIME tdata;
+	xtime tdata;
 
-	GetLocalTime(&tdata);
+	xt_get(&tdata);
 
 	if (cmosrtc_nvram[0xB] & 0x40) {
 		cmosrtc_nvram[0xC] = 0xC0;
@@ -63,21 +64,21 @@ void cmosrtc_tick(void* dummy) {
 		return;
 	}
 
-	cmosrtc_nvram[0] = cmosrtc_bcd(tdata.wSecond);
-	cmosrtc_nvram[2] = cmosrtc_bcd(tdata.wMinute);
-	cmosrtc_nvram[4] = cmosrtc_bcd(tdata.wHour);
-	cmosrtc_nvram[6] = cmosrtc_bcd(tdata.wDayOfWeek);
-	cmosrtc_nvram[7] = cmosrtc_bcd(tdata.wDay);
-	cmosrtc_nvram[8] = cmosrtc_bcd(tdata.wMonth);
-	cmosrtc_nvram[9] = cmosrtc_bcd(tdata.wYear % 100);
-	//cmosrtc_nvram[32] = cmosrtc_bcd(tdata.wYear / 100);
+	cmosrtc_nvram[0] = cmosrtc_bcd(xt_sec(&tdata) % 60);
+	cmosrtc_nvram[2] = cmosrtc_bcd(xt_min(&tdata));
+	cmosrtc_nvram[4] = cmosrtc_bcd(xt_hour(&tdata));
+	cmosrtc_nvram[6] = cmosrtc_bcd(xt_wday(&tdata));
+	cmosrtc_nvram[7] = cmosrtc_bcd(xt_mday(&tdata));
+	cmosrtc_nvram[8] = cmosrtc_bcd(xt_mon(&tdata) + 1);
+	cmosrtc_nvram[9] = cmosrtc_bcd((xt_year(&tdata) + 1900) % 100);
+	//cmosrtc_nvram[32] = cmosrtc_bcd((xt_year(&tdata) + 1900) / 100);
 }
 
 uint8_t cmosrtc_read(void* dummy, uint16_t addr) {
-	SYSTEMTIME tdata;
+	xtime tdata;
 	uint8_t ret = 0xFF;
 
-	GetLocalTime(&tdata);
+	xt_get(&tdata);
 
 	if (addr == 0x71) {
 		ret = cmosrtc_nvram[cmosrtc_index & 0x7F];
@@ -86,7 +87,7 @@ uint8_t cmosrtc_read(void* dummy, uint16_t addr) {
 		}
 		else if (cmosrtc_index == 0x0A) {
 			ret = cmosrtc_nvram[0xA] & 0x7F;
-			if (tdata.wMilliseconds < 10) {
+			if (xt_msec(&tdata) < 10) {
 				ret |= 0x80;
 			}
 		}

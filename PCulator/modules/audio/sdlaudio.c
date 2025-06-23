@@ -35,11 +35,11 @@
 #include "../../debuglog.h"
 #ifdef _WIN32
 #include <Windows.h>
-#include <SDL/SDL.h>
 #include <process.h>
+#include "SDL.h"
 #else
 #include <sys/time.h>
-#include <SDL.h>
+#include "SDL.h"
 #include <pthread.h>
 pthread_t sdlaudio_sampleThreadID;
 #endif

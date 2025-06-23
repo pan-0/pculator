@@ -400,7 +400,7 @@ void vga_update(uint32_t start_x, uint32_t start_y, uint32_t end_x, uint32_t end
 	}
 }
 
-void vga_renderThread(void* dummy) {
+static void renderThread(void* dummy) {
 	while (running) {
 		if (vga_doRender == 1) {
 			vga_update(0, 0, vga_w - 1, vga_h - 1);
@@ -421,6 +421,19 @@ void vga_renderThread(void* dummy) {
 	pthread_exit(NULL);
 #endif
 }
+
+#ifdef _WIN32
+void vga_renderThread(void* dummy)
+{
+	renderThread(dummy);
+}
+#else
+void *vga_renderThread(void *dummy)
+{
+	renderThread(dummy);
+	return NULL;
+}
+#endif
 
 void vga_calcmemorymap() {
 	switch (vga_gfxd[0x06] & 0x0C) {

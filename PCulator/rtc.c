@@ -27,42 +27,39 @@
 #include "config.h"
 #include "ports.h"
 #include "debuglog.h"
-
-#ifdef _WIN32
-
-#include <Windows.h>
+#include "xtime.h"
 
 uint8_t rtc_read(void* dummy, uint16_t addr) {
 	uint8_t ret = 0xFF;
-	SYSTEMTIME tdata;
+	xtime tdata;
 
-	GetLocalTime(&tdata);
+	xt_get(&tdata);
 
 	addr &= 0x1F;
 	switch (addr) {
 	case 1:
-		ret = (uint8_t)tdata.wMilliseconds / 10;
+		ret = (uint8_t)(xt_msec(&tdata) / 10);
 		break;
 	case 2:
-		ret = (uint8_t)tdata.wSecond;
+		ret = (uint8_t)(xt_sec(&tdata) % 60);
 		break;
 	case 3:
-		ret = (uint8_t)tdata.wMinute;
+		ret = (uint8_t)xt_min(&tdata);
 		break;
 	case 4:
-		ret = (uint8_t)tdata.wHour;
+		ret = (uint8_t)xt_hour(&tdata);
 		break;
 	case 5:
-		ret = (uint8_t)tdata.wDayOfWeek;
+		ret = (uint8_t)xt_wday(&tdata);
 		break;
 	case 6:
-		ret = (uint8_t)tdata.wDay;
+		ret = (uint8_t)xt_mday(&tdata);
 		break;
 	case 7:
-		ret = (uint8_t)tdata.wMonth;
+		ret = (uint8_t)xt_mon(&tdata) + 1;
 		break;
 	case 9:
-		ret = (uint8_t)tdata.wYear % 100;
+		ret = (uint8_t)((xt_year(&tdata) + 1900) % 100);
 		break;
 	}
 
@@ -75,56 +72,6 @@ uint8_t rtc_read(void* dummy, uint16_t addr) {
 
 	return ret;
 }
-
-#else
-
-#include <time.h>
-
-uint8_t rtc_read(void* dummy, uint16_t addr) {
-	uint8_t ret = 0xFF;
-	struct tm tdata;
-
-	time(&tdata);
-
-	addr &= 0x1F;
-	switch (addr) {
-	case 1:
-		ret = 0;
-		break;
-	case 2:
-		ret = (uint8_t)tdata.tm_sec;
-		break;
-	case 3:
-		ret = (uint8_t)tdata.tm_min;
-		break;
-	case 4:
-		ret = (uint8_t)tdata.tm_hour;
-		break;
-	case 5:
-		ret = (uint8_t)tdata.tm_wday;
-		break;
-	case 6:
-		ret = (uint8_t)tdata.tm_mday;
-		break;
-	case 7:
-		ret = (uint8_t)tdata.tm_mon;
-		break;
-	case 9:
-		ret = (uint8_t)tdata.tm_year % 100;
-		break;
-	}
-
-	if (ret != 0xFF) {
-		uint8_t rh, rl;
-		rh = (ret / 10) % 10;
-		rl = ret % 10;
-		ret = (rh << 4) | rl;
-	}
-
-	return ret;
-}
-
-#endif
 
 void rtc_write(void* dummy, uint16_t addr, uint8_t value) {
 

@@ -24,7 +24,7 @@
 #include <string.h>
 #include "machine.h"
 #include <Windows.h>
-#include <SDL/SDL.h>
+#include "SDL.h"
 #include "config.h"
 #include "modules/disk/biosdisk.h"
 #include "timing.h"
