@@ -364,7 +364,7 @@ FUNC_INLINE uint16_t cpu_readw(CPU_t* cpu, uint32_t addr32) {
 }
 
 FUNC_INLINE uint32_t cpu_readl(CPU_t* cpu, uint32_t addr32) {
-	return ((uint32_t)cpu_read(cpu, addr32) | (uint32_t)(cpu_read(cpu, addr32 + 1) << 8) | (uint32_t)(cpu_read(cpu, addr32 + 2) << 16) | (uint32_t)(cpu_read(cpu, addr32 + 3) << 24));
+	return ((uint32_t)cpu_read(cpu, addr32) | (uint32_t)(cpu_read(cpu, addr32 + 1) << 8) | (uint32_t)(cpu_read(cpu, addr32 + 2) << 16) | ((uint32_t)cpu_read(cpu, addr32 + 3) << 24));
 }
 
 uint16_t cpu_readw_linear(CPU_t* cpu, uint32_t addr32) {
