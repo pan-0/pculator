@@ -127,6 +127,11 @@ int vga_init() {
 	return 0;
 }
 
+static double max(double x, double y)
+{
+	return x > y ? x : y;
+}
+
 void vga_updateScanlineTiming() {
 	double pixelclock;
 	static uint32_t lastw = 0, lasth = 0;
@@ -146,7 +151,8 @@ void vga_updateScanlineTiming() {
 	vga_vblankend = (uint64_t)vga_crtcd[0x06] | ((uint64_t)(vga_crtcd[0x07] & 0x01) << 8) | ((uint64_t)(vga_crtcd[0x07] & 0x20) << 4);
 	vga_vblanklen = vga_vblankend - vga_vblankstart;
 	vga_htotal = (uint64_t)vga_crtcd[0x00];
-	vga_targetFPS = pixelclock / ((double)(vga_htotal + 5) * (double)vga_dots * (double)vga_vblankend);
+	/* TODO: Should it be `INFINITY` if the denominator is `0`? */
+	vga_targetFPS = pixelclock / max((double)(vga_htotal + 5) * (double)vga_dots * (double)vga_vblankend, 1.0);
 
 	pixelclock = (double)timing_getFreq() / pixelclock; //get ratio of pixel clock vs our timer frequency for interval calculations
 	vga_dispinterval = (uint64_t)((double)(vga_htotal + 5) * (double)vga_dots * pixelclock);
