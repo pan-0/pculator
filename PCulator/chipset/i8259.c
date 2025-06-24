@@ -28,7 +28,8 @@
 #include "i8259.h"
 #include "../ports.h"
 
-uint8_t i8259_read(I8259_t* i8259, uint16_t portnum) {
+uint8_t i8259_read(void* ptr, uint32_t portnum) {
+	I8259_t* i8259 = ptr;
 #ifdef DEBUG_PIC
 	debug_log(DEBUG_DETAIL, "[I8259] Read port 0x%X\n", portnum);
 #endif
@@ -46,7 +47,8 @@ uint8_t i8259_read(I8259_t* i8259, uint16_t portnum) {
 	return 0;
 }
 
-void i8259_write(I8259_t* i8259, uint16_t portnum, uint8_t value) {
+void i8259_write(void* ptr, uint32_t portnum, uint8_t value) {
+	I8259_t* i8259 = ptr;
 #ifdef DEBUG_PIC
 	debug_log(DEBUG_DETAIL, "[I8259] Write port 0x%X: %X\n", portnum, value);
 #endif

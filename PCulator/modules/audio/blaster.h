@@ -30,8 +30,8 @@ typedef struct {
 	uint8_t activedma;
 } BLASTER_t;
 
-void blaster_write(BLASTER_t* blaster, uint16_t addr, uint8_t value);
-uint8_t blaster_read(BLASTER_t* blaster, uint16_t addr);
+void blaster_write(void* ptr, uint32_t addr, uint8_t value);
+uint8_t blaster_read(void* ptr, uint32_t addr);
 int16_t blaster_getSample(BLASTER_t* blaster);
 void blaster_init(BLASTER_t* blaster, I8237_t* i8237, I8259_t* i8259, uint16_t base, uint8_t dma, uint8_t irq);
 

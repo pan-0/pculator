@@ -14,8 +14,8 @@ typedef struct {
 	PCSPEAKER_t* pcspeaker;
 } I8255_t;
 
-uint8_t i8255_readport(I8255_t* i8255, uint16_t portnum);
-void i8255_writeport(I8255_t* i8255, uint16_t portnum, uint8_t value);
+uint8_t i8255_readport(void* ptr, uint32_t portnum);
+void i8255_writeport(void* ptr, uint32_t portnum, uint8_t value);
 void i8255_init(I8255_t* i8255, KEYSTATE_t* keystate, PCSPEAKER_t* pcspeaker);
 
 #endif

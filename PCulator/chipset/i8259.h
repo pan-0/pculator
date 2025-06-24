@@ -43,7 +43,7 @@ void i8259_init(I8259_t* i8259, uint16_t portbase, I8259_t* master);
 void i8259_doirq(I8259_t* i8259, uint8_t irqnum);
 void i8259_clearirq(I8259_t* i8259, uint8_t irqnum);
 uint8_t i8259_nextintr(I8259_t* i8259);
-void i8259_write(I8259_t* i8259, uint16_t portnum, uint8_t value);
-uint8_t i8259_read(I8259_t* i8259, uint16_t portnum);
+void i8259_write(void* ptr, uint32_t portnum, uint8_t value);
+uint8_t i8259_read(void* ptr, uint32_t portnum);
 
 #endif

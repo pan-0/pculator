@@ -37,8 +37,8 @@ typedef struct {
 	I8259_t* i8259;
 } UART_t;
 
-void uart_writeport(UART_t* uart, uint16_t addr, uint8_t value);
-uint8_t uart_readport(UART_t* uart, uint16_t addr);
+void uart_writeport(void* ptr, uint32_t addr, uint8_t value);
+uint8_t uart_readport(void* ptr, uint32_t addr);
 void uart_rxdata(UART_t* uart, uint8_t value);
 void uart_init(UART_t* uart, I8259_t* i8259, uint16_t base, uint8_t irq, void (*tx)(void*, uint8_t), void* udata, void (*mcr)(void*, uint8_t), void* udata2);
 

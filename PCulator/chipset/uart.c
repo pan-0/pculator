@@ -32,7 +32,8 @@
 
 const uint8_t uart_wordmask[4] = { 0x1F, 0x3F, 0x7F, 0xFF }; //5, 6, 7, or 8 bit words based on bits 1-0 in LCR
 
-void uart_writeport(UART_t* uart, uint16_t addr, uint8_t value) {
+void uart_writeport(void* ptr, uint32_t addr, uint8_t value) {
+	UART_t* uart = ptr;
 #ifdef DEBUG_UART
 	debug_log(DEBUG_DETAIL, "[UART] Write %03X: %u\r\n", addr, value);
 #endif
@@ -87,7 +88,8 @@ void uart_writeport(UART_t* uart, uint16_t addr, uint8_t value) {
 	}
 }
 
-uint8_t uart_readport(UART_t* uart, uint16_t addr) {
+uint8_t uart_readport(void* ptr, uint32_t addr) {
+	UART_t* uart = ptr;
 	uint8_t ret = 0; // xFF;
 
 #ifdef DEBUG_UART

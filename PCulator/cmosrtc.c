@@ -74,7 +74,7 @@ void cmosrtc_tick(void* dummy) {
 	//cmosrtc_nvram[32] = cmosrtc_bcd((xt_year(&tdata) + 1900) / 100);
 }
 
-uint8_t cmosrtc_read(void* dummy, uint16_t addr) {
+uint8_t cmosrtc_read(void* dummy, uint32_t addr) {
 	xtime tdata;
 	uint8_t ret = 0xFF;
 
@@ -108,7 +108,7 @@ uint8_t cmosrtc_read(void* dummy, uint16_t addr) {
 	return ret;
 }
 
-void cmosrtc_write(void* dummy, uint16_t addr, uint8_t value) {
+void cmosrtc_write(void* dummy, uint32_t addr, uint8_t value) {
 	switch (addr) {
 	case 0x3F:
 		cmosrtc_ext_nvram[cmosrtc_nvram[0x3D] & 0x7F] = value;

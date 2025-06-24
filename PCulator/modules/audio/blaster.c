@@ -218,7 +218,8 @@ void blaster_writecmd(BLASTER_t* blaster, uint8_t value) {
 	blaster->lastcmd = value;
 }
 
-void blaster_write(BLASTER_t* blaster, uint16_t addr, uint8_t value) {
+void blaster_write(void* ptr, uint32_t addr, uint8_t value) {
+	BLASTER_t* blaster = ptr;
 #ifdef DEBUG_BLASTER
 	debug_log(DEBUG_DETAIL, "[BLASTER] Write %03X: %02X\r\n", addr, value);
 #endif
@@ -236,7 +237,8 @@ void blaster_write(BLASTER_t* blaster, uint16_t addr, uint8_t value) {
 	}
 }
 
-uint8_t blaster_read(BLASTER_t* blaster, uint16_t addr) {
+uint8_t blaster_read(void* ptr, uint32_t addr) {
+	BLASTER_t* blaster = ptr;
 	uint8_t ret = 0xFF;
 
 #ifdef DEBUG_BLASTER

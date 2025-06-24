@@ -54,8 +54,8 @@ typedef struct {
 	I8253CB_t cbdata;
 } I8253_t;
 
-void i8253_write(I8253_t* i8253, uint16_t portnum, uint8_t value);
-uint8_t i8253_read(I8253_t* i8253, uint16_t portnum);
+void i8253_write(void* ptr, uint32_t portnum, uint8_t value);
+uint8_t i8253_read(void* ptr, uint32_t portnum);
 void i8253_init(I8253_t* i8253, I8259_t* i8259, PCSPEAKER_t* pcspeaker);
 
 #endif

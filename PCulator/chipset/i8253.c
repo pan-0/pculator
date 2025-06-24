@@ -34,7 +34,8 @@
 
 uint32_t i8253_timers[3];
 
-void i8253_write(I8253_t* i8253, uint16_t portnum, uint8_t value) {
+void i8253_write(void* ptr, uint32_t portnum, uint8_t value) {
+	I8253_t* i8253 = ptr;
 	uint8_t sel, rl, loaded;
 	portnum &= 3;
 
@@ -109,7 +110,8 @@ void i8253_write(I8253_t* i8253, uint16_t portnum, uint8_t value) {
 	}
 }
 
-uint8_t i8253_read(I8253_t* i8253, uint16_t portnum) {
+uint8_t i8253_read(void* ptr, uint32_t portnum) {
+	I8253_t* i8253 = ptr;
 	uint8_t ret;
 	portnum &= 3;
 
@@ -138,17 +140,21 @@ uint8_t i8253_read(I8253_t* i8253, uint16_t portnum) {
 	}
 }
 
-void i8253_timerCallback0(I8259_t* i8259) {
+void i8253_timerCallback0(void* ptr) {
+	I8259_t* i8259 = ptr;
 	i8259_doirq(i8259, 0);
 }
 
-void i8253_timerCallback1(I8259_t* i8259) {
+void i8253_timerCallback1(void* ptr) {
+	I8259_t* i8259 = ptr;
 }
 
-void i8253_timerCallback2(I8259_t* i8259) {
+void i8253_timerCallback2(void* ptr) {
+	I8259_t* i8259 = ptr;
 }
 
-void i8253_tickCallback(I8253CB_t* i8253cb) {
+void i8253_tickCallback(void* ptr) {
+	I8253CB_t* i8253cb = ptr;
 	I8253_t* i8253;
 	I8259_t* i8259;
 	uint8_t i;

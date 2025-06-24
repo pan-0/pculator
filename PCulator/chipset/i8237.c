@@ -44,7 +44,8 @@ void i8237_reset(I8237_t* i8237) {
 	}
 }
 
-void i8237_writeport(I8237_t* i8237, uint16_t addr, uint8_t value) {
+void i8237_writeport(void* ptr, uint32_t addr, uint8_t value) {
+	I8237_t* i8237 = ptr;
 	uint8_t ch;
 	uint16_t add = 0;
 	uint8_t* useflipflop;
@@ -146,7 +147,8 @@ void i8237_writeport(I8237_t* i8237, uint16_t addr, uint8_t value) {
 	}
 }
 
-void i8237_writepage(I8237_t* i8237, uint16_t addr, uint8_t value) {
+void i8237_writepage(void* ptr, uint32_t addr, uint8_t value) {
+	I8237_t* i8237 = ptr;
 	uint8_t ch;
 #ifdef DEBUG_DMA
 	debug_log(DEBUG_DETAIL, "[DMA] Write port 0x%X: %X\n", addr, value);
@@ -186,7 +188,8 @@ void i8237_writepage(I8237_t* i8237, uint16_t addr, uint8_t value) {
 #endif
 }
 
-uint8_t i8237_readport(I8237_t* i8237, uint16_t addr) {
+uint8_t i8237_readport(void* ptr, uint32_t addr) {
+	I8237_t* i8237 = ptr;
 	uint8_t ch, ret = 0xFF;
 	uint16_t add = 0;
 	uint8_t* useflipflop;
@@ -252,7 +255,8 @@ uint8_t i8237_readport(I8237_t* i8237, uint16_t addr) {
 	return ret;
 }
 
-uint8_t i8237_readpage(I8237_t* i8237, uint16_t addr) {
+uint8_t i8237_readpage(void* ptr, uint32_t addr) {
+	I8237_t* i8237 = ptr;
 	uint8_t ch = 0xFF;
 	uint8_t ret;
 
@@ -296,7 +300,8 @@ uint8_t i8237_readpage(I8237_t* i8237, uint16_t addr) {
 	return ret;
 }
 
-uint8_t i8237_read(I8237_t* i8237, uint8_t ch) {
+uint8_t i8237_read(void* ptr, uint8_t ch) {
+	I8237_t* i8237 = ptr;
 	uint8_t ret = 0xFF;
 
 	//TODO: fix commented out stuff
@@ -319,7 +324,8 @@ uint8_t i8237_read(I8237_t* i8237, uint8_t ch) {
 	return ret;
 }
 
-void i8237_write(I8237_t* i8237, uint8_t ch, uint8_t value) {
+void i8237_write(void* ptr, uint8_t ch, uint8_t value) {
+	I8237_t* i8237 = ptr;
 	//TODO: fix commented out stuff
 	//if (i8237->chan[ch].enable && !i8237->chan[ch].terminal) {
 	cpu_write(i8237->cpu, i8237->chan[ch].page + i8237->chan[ch].addr, value);

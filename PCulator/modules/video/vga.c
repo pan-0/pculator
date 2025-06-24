@@ -515,7 +515,7 @@ void vga_writecrtcd(uint8_t value) {
 	}
 }
 
-void vga_writeport(void* dummy, uint16_t port, uint8_t value) {
+void vga_writeport(void* dummy, uint32_t port, uint8_t value) {
 #ifdef DEBUG_VGA
 	debug_log(DEBUG_DETAIL, "Write VGA port: %02X -> %03X\r\n", value, port);
 #endif
@@ -636,7 +636,7 @@ void vga_writeport(void* dummy, uint16_t port, uint8_t value) {
 	}
 }
 
-uint8_t vga_readport(void* dummy, uint16_t port) {
+uint8_t vga_readport(void* dummy, uint32_t port) {
 	uint8_t ret = 0xFF;
 #ifdef DEBUG_VGA
 	debug_log(DEBUG_DETAIL, "Read VGA port: %03X\r\n", port);

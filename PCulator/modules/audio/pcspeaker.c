@@ -32,7 +32,8 @@ void pcspeaker_selectGate(PCSPEAKER_t* spk, uint8_t value) {
 	spk->pcspeaker_gateSelect = value;
 }
 
-void pcspeaker_callback(PCSPEAKER_t* spk) {
+void pcspeaker_callback(void* ptr) {
+	PCSPEAKER_t* spk = ptr;
 	if (spk->pcspeaker_gateSelect == PC_SPEAKER_USE_TIMER2) {
 		if (spk->pcspeaker_gate[PC_SPEAKER_GATE_TIMER2] && spk->pcspeaker_gate[PC_SPEAKER_GATE_DIRECT]) {
 			if (spk->pcspeaker_amplitude < 15000) {

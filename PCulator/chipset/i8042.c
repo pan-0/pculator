@@ -215,7 +215,7 @@ void i8042_write_0x64(uint8_t value) {
 }
 
 // **Main I/O Handlers**
-uint8_t i8042_readport(void* dummy, uint16_t portnum) {
+uint8_t i8042_readport(void* dummy, uint32_t portnum) {
     switch (portnum) {
     case 0x60: return i8042_read_0x60();
     case 0x64: return i8042_read_0x64();
@@ -227,7 +227,7 @@ uint8_t i8042_readport(void* dummy, uint16_t portnum) {
     }
 }
 
-void i8042_writeport(void* dummy, uint16_t portnum, uint8_t value) {
+void i8042_writeport(void* dummy, uint32_t portnum, uint8_t value) {
     switch (portnum) {
     case 0x60:
         i8042_write_0x60(value);

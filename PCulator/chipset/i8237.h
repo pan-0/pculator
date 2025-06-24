@@ -37,10 +37,10 @@ typedef struct I8237_s {
 #define DMA_OP_WRITEMEM		1
 #define DMA_OP_READMEM		2
 
-void i8237_writeport(I8237_t* i8237, uint16_t addr, uint8_t value);
-uint8_t i8237_readport(I8237_t* i8237, uint16_t addr);
-uint8_t i8237_read(I8237_t* i8237, uint8_t ch);
-void i8237_write(I8237_t* i8237, uint8_t ch, uint8_t value);
+void i8237_writeport(void* ptr, uint32_t addr, uint8_t value);
+uint8_t i8237_readport(void* ptr, uint32_t addr);
+uint8_t i8237_read(void* ptr, uint8_t ch);
+void i8237_write(void* ptr, uint8_t ch, uint8_t value);
 void i8237_init(I8237_t* i8237, CPU_t* cpu);
 
 #endif

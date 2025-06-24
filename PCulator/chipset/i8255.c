@@ -33,7 +33,8 @@
 #include "../ports.h"
 #include "../debuglog.h"
 
-uint8_t i8255_readport(I8255_t* i8255, uint16_t portnum) {
+uint8_t i8255_readport(void* ptr, uint32_t portnum) {
+	I8255_t* i8255 = ptr;
 #ifdef DEBUG_PPI
 	debug_log(DEBUG_DETAIL, "[I8255] Read port %02X\r\n", portnum);
 #endif
@@ -55,7 +56,8 @@ uint8_t i8255_readport(I8255_t* i8255, uint16_t portnum) {
 	return 0xFF;
 }
 
-void i8255_writeport(I8255_t* i8255, uint16_t portnum, uint8_t value) {
+void i8255_writeport(void* ptr, uint32_t portnum, uint8_t value) {
+	I8255_t* i8255 = ptr;
 #ifdef DEBUG_PPI
 	debug_log(DEBUG_DETAIL, "[I8255] Write port %02X <- %02X\r\n", portnum, value);
 #endif
@@ -92,7 +94,8 @@ void i8255_writeport(I8255_t* i8255, uint16_t portnum, uint8_t value) {
 	}
 }
 
-void i8255_refreshToggle(I8255_t* i8255) {
+void i8255_refreshToggle(void *ptr) {
+	I8255_t* i8255 = ptr;
 	i8255->portB ^= 0x10; //simulate DRAM refresh toggle, many BIOSes require this...
 }
 
