@@ -360,11 +360,11 @@ void cpu_writel_linear(CPU_t* cpu, uint32_t addr32, uint32_t value) {
 }
 
 FUNC_INLINE uint16_t cpu_readw(CPU_t* cpu, uint32_t addr32) {
-	return ((uint16_t)cpu_read(cpu, addr32) | (uint16_t)(cpu_read(cpu, addr32 + 1) << 8));
+	return ((uint16_t)cpu_read(cpu, addr32) | ((uint16_t)cpu_read(cpu, addr32 + 1) << 8));
 }
 
 FUNC_INLINE uint32_t cpu_readl(CPU_t* cpu, uint32_t addr32) {
-	return ((uint32_t)cpu_read(cpu, addr32) | (uint32_t)(cpu_read(cpu, addr32 + 1) << 8) | (uint32_t)(cpu_read(cpu, addr32 + 2) << 16) | ((uint32_t)cpu_read(cpu, addr32 + 3) << 24));
+	return ((uint32_t)cpu_read(cpu, addr32) | ((uint32_t)cpu_read(cpu, addr32 + 1) << 8) | ((uint32_t)cpu_read(cpu, addr32 + 2) << 16) | ((uint32_t)cpu_read(cpu, addr32 + 3) << 24));
 }
 
 uint16_t cpu_readw_linear(CPU_t* cpu, uint32_t addr32) {
@@ -372,7 +372,7 @@ uint16_t cpu_readw_linear(CPU_t* cpu, uint32_t addr32) {
 }
 
 uint32_t cpu_readl_linear(CPU_t* cpu, uint32_t addr32) {
-	return ((uint32_t)cpu_read_linear(cpu, addr32) | (uint32_t)(cpu_read_linear(cpu, addr32 + 1) << 8) | (uint32_t)(cpu_read_linear(cpu, addr32 + 2) << 16) | (uint32_t)(cpu_read_linear(cpu, addr32 + 3) << 24));
+	return ((uint32_t)cpu_read_linear(cpu, addr32) | ((uint32_t)cpu_read_linear(cpu, addr32 + 1) << 8) | ((uint32_t)cpu_read_linear(cpu, addr32 + 2) << 16) | ((uint32_t)cpu_read_linear(cpu, addr32 + 3) << 24));
 }
 
 void memory_mapRegister(uint32_t start, uint32_t len, uint8_t* readb, uint8_t* writeb) {
