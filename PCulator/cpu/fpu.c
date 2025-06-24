@@ -25,11 +25,13 @@
 #include "fpu.h"
 
 #include <math.h>
+#include <stdalign.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
+#include "../config.h"
 #include "../memory.h"
 
 /*#include "blink/builtin.h"*/
@@ -43,7 +45,15 @@
 /*#include "blink/pun.h"*/
 /*#include "blink/rde.h"*/
 
-#define __builtin_unreachable() {}
+#ifdef __GNUC__
+typedef u16 __attribute__((__may_alias__)) u16a;
+typedef u32 __attribute__((__may_alias__)) u32a;
+typedef u64 __attribute__((__may_alias__)) u64a;
+#else
+typedef u16 u16a;
+typedef u32 u32a;
+typedef u64 u64a;
+#endif
 
 #define FPUREG 0
 #define MEMORY 1
@@ -135,10 +145,11 @@ void Write64(u32 addr, u64 val) {
     cpu_writel(fpum.cpu, addr + 4, val >> 32);
 }
 
+/* `src` must be `8`-byte aligned. */
 void Write80(u32 addr, u8* src) {
-    cpu_writel(fpum.cpu, addr, *(u32*)src);
-    cpu_writel(fpum.cpu, addr + 4, *(u32*)(src + 4));
-    cpu_writew(fpum.cpu, addr + 8, *(u16*)(src + 8));
+    cpu_writel(fpum.cpu, addr, *(u32a*)src);
+    cpu_writel(fpum.cpu, addr + 4, *(u32a*)(src + 4));
+    cpu_writew(fpum.cpu, addr + 8, *(u16a*)(src + 8));
 }
 
 void fpunew_init(CPU_t* cpu) {
@@ -163,16 +174,16 @@ u8* SerializeLdbl(u8 b[10], double f) {
         e -= 0x3ff;
         e += 0x3fff;
     }
-    *(u16*)(b + 8) = e | u.i >> 63 << 15;
-    *(u64*)(b) = (u.i & 0x000fffffffffffff) << 11 | (u64)!!u.f << 63;
+    *(u16a*)(b + 8) = e | u.i >> 63 << 15;
+    *(u64a*)(b) = (u.i & 0x000fffffffffffff) << 11 | (u64)!!u.f << 63;
     return b;
 }
 
 double DeserializeLdbl(const u8 b[10]) {
     union DoublePun u;
-    u.i = (u64)(MAX(-1023, MIN(1024, (((*(u16*)(b + 8)) & 0x7fff) - 0x3fff))) + 1023)
+    u.i = (u64)(MAX(-1023, MIN(1024, (((*(u16a*)(b + 8)) & 0x7fff) - 0x3fff))) + 1023)
         << 52 |
-        (((*(u64*)(b)) & 0x7fffffffffffffff) + (1 << (11 - 1))) >> 11 |
+        (((*(u64a*)(b)) & 0x7fffffffffffffff) + (1 << (11 - 1))) >> 11 |
         (u64)(b[9] >> 7) << 63;
     return u.f;
 }
@@ -304,14 +315,15 @@ static void FpuSetMemoryDouble(struct Machine* m, double f) {
 }
 
 static double FpuGetMemoryLdbl(struct Machine* m) {
-    u8 b[10];
+    alignas(8) u8 b[10];
     Read80(b, m->fpu.dp);
     return DeserializeLdbl(b);
 }
 
 static void FpuSetMemoryLdbl(struct Machine* m, double f) {
     void* p[2];
-    u8 b[10], t[10];
+    alignas(8) u8 b[10];
+    alignas(8) u8 t[10];
     SerializeLdbl(b, f);
     //memcpy(BeginStore(m, m->fpu.dp, 10, p, t), b, 10);
     //EndStore(m, m->fpu.dp, 10, p, t);
@@ -377,7 +389,7 @@ static double FpuAdd(struct Machine* m, double x, double y) {
                 return copysign(NAN, x);
             }
         default:
-            __builtin_unreachable();
+            UNREACHABLE();
         }
     }
 
@@ -402,7 +414,7 @@ static double FpuSub(struct Machine* m, double x, double y) {
                 return y;
             }
         default:
-            __builtin_unreachable();
+            UNREACHABLE();
         }
     }
 
@@ -454,7 +466,7 @@ static double FpuRound(struct Machine* m, double x) {
     case 3:
         return trunc(x);
     default:
-        __builtin_unreachable();
+        UNREACHABLE();
     }
 }
 
@@ -496,7 +508,7 @@ static void OpFxam(struct Machine* m) {
             m->fpu.sw |= kFpuSwC2;
             break;
         default:
-            __builtin_unreachable();
+            UNREACHABLE();
         }
     }
 }
@@ -1076,36 +1088,38 @@ static void OpFstswAx(struct Machine* m) {
 }
 
 static void SetFpuEnv(struct Machine* m, u8 p[28]) {
-    *(u16*)(p + 0) = m->fpu.cw;
-    *(u16*)(p + 4) = m->fpu.sw;
-    *(u16*)(p + 8) = m->fpu.tw;
-    *(u64*)(p + 12) = m->fpu.ip;
-    *(u16*)(p + 18) = m->fpu.op;
-    *(u64*)(p + 20) = m->fpu.dp;
+    *(u16a*)(p + 0) = m->fpu.cw;
+    *(u16a*)(p + 4) = m->fpu.sw;
+    *(u16a*)(p + 8) = m->fpu.tw;
+    *(u64a*)(p + 12) = m->fpu.ip;
+    *(u16a*)(p + 18) = m->fpu.op;
+    *(u64a*)(p + 20) = m->fpu.dp;
 }
 
 static void GetFpuEnv(struct Machine* m, u8 p[28]) {
-    m->fpu.cw = *(u16*)(p + 0);
-    m->fpu.sw = *(u16*)(p + 4);
-    m->fpu.tw = *(u16*)(p + 8);
+    m->fpu.cw = *(u16a*)(p + 0);
+    m->fpu.sw = *(u16a*)(p + 4);
+    m->fpu.tw = *(u16a*)(p + 8);
 }
 
 static void OpFstenv(struct Machine* m) {
     void* p[2];
-    u8 b[28];
+    alignas(8) u8 b[28];
     SetFpuEnv(m, b); // BeginStore(m, m->fpu.dp, sizeof(b), p, b));
     //EndStore(m, m->fpu.dp, sizeof(b), p, b);
 }
 
 static void OpFldenv(struct Machine* m) {
-    u8 b[28];
+    alignas(8) u8 b[28];
     GetFpuEnv(m, b); //Load(m, m->fpu.dp, sizeof(b), b));
 }
 
 static void OpFsave(struct Machine* m) {
     int i;
     void* p[2];
-    u8* a, b[108], t[16];
+    alignas(8) u8 b[108];
+    alignas(8) u8 t[16];
+    u8* a;
     a = b; // BeginStore(m, m->fpu.dp, sizeof(b), p, b);
     SetFpuEnv(m, a);
     memset(t, 0, sizeof(t));
@@ -1118,7 +1132,8 @@ static void OpFsave(struct Machine* m) {
 
 static void OpFrstor(struct Machine* m) {
     int i;
-    u8* a, b[108];
+    alignas(8) u8 b[108];
+    u8* a;
     a = b; // Load(m, m->fpu.dp, sizeof(b), b);
     GetFpuEnv(m, a);
     for (i = 0; i < 8; ++i) {
@@ -1347,7 +1362,7 @@ void OpFpu() { //P) {
             CASE(6, OpFdecstp(m));
             CASE(7, OpFincstp(m));
         default:
-            __builtin_unreachable();
+            UNREACHABLE();
         }
         break;
     case DISP(0xD9, FPUREG, 7):
@@ -1361,7 +1376,7 @@ void OpFpu() { //P) {
             CASE(6, OpFsin(m));
             CASE(7, OpFcos(m));
         default:
-            __builtin_unreachable();
+            UNREACHABLE();
         }
         break;
     case DISP(0xDb, FPUREG, 4):
