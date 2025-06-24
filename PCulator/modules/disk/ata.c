@@ -9,6 +9,7 @@
 #	define xfseek fseek
 #	define xftell ftell
 #endif
+#include <stddef.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -19,7 +20,7 @@
 #include "ata.h"
 
 ATA_t ata;
-uint8_t ata_swap[20];
+char ata_swap[20];
 
 void ata_delayed_irq(void* dummy) {
 	if (!ata.delay_irq) return;
@@ -43,9 +44,11 @@ void ata_irq() {
 
 void ata_swap_string(const char* str) {
 	int i;
-	memcpy(ata_swap, str, 20);
+	size_t len = strlen(str);
+	memcpy(ata_swap, str, len);
+	memset(ata_swap + len, '\0', sizeof(ata_swap) - len);
 	for (i = 0; i < 20; i += 2) {
-		uint8_t tmp;
+		char tmp;
 		tmp = ata_swap[i + 1];
 		ata_swap[i + 1] = ata_swap[i];
 		ata_swap[i] = tmp;
