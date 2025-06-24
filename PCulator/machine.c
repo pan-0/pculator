@@ -75,7 +75,7 @@ const MACHINEDEF_t machine_defs[] = {
 	{ "hot543", "Shuttle HOT-543", machine_init_opti5x7, "cmos/hot543.bin", VIDEO_CARD_VGA, -1, MACHINE_HW_BLASTER | MACHINE_HW_UART1_MOUSE | MACHINE_HW_DISK_HLE | MACHINE_HW_RTC},
 	{ "sp97xv", "Asus SP97-XV", machine_init_opti5x7, "cmos/sp97xv.bin", VIDEO_CARD_VGA, -1, MACHINE_HW_BLASTER | MACHINE_HW_UART1_MOUSE | MACHINE_HW_DISK_HLE | MACHINE_HW_RTC},
 	{ "p5sp4", "ASUS PCI/I-P5SP4", machine_init_opti495, "cmos/p5sp4.bin", VIDEO_CARD_VGA, -1, MACHINE_HW_BLASTER | MACHINE_HW_UART1_MOUSE | MACHINE_HW_DISK_HLE | MACHINE_HW_RTC},
-	{ NULL }
+	{ 0 }
 };
 
 const MACHINEMEM_t machine_mem[][10] = {

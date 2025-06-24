@@ -6,6 +6,6 @@
 
 uint8_t rtc_read(void* dummy, uint16_t addr);
 void rtc_write(void* dummy, uint16_t addr, uint8_t value);
-void rtc_init();
+void rtc_init(CPU_t *cpu);
 
 #endif

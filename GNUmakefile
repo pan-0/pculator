@@ -16,8 +16,7 @@ release.cflags ::= \
 	-fno-ident \
 	-fno-asynchronous-unwind-tables \
 	-fdata-sections \
-	-ffunction-sections \
-	-mmanual-endbr
+	-ffunction-sections
 release.ldflags ::= \
 	-s \
 	-Wl,--gc-sections \
@@ -36,7 +35,6 @@ sanitize.cflags ::= \
 	-fno-asynchronous-unwind-tables \
 	-fdata-sections \
 	-ffunction-sections \
-	-mmanual-endbr \
 	-fno-omit-frame-pointer \
 	-fsanitize-recover=address \
 	-fsanitize=address \

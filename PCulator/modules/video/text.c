@@ -43,7 +43,7 @@ HANDLE text_handle;
 #endif
 
 int text_init() {
-	int x, y;
+	//int x, y;
 
 	debug_log(DEBUG_INFO, "[TEXT] Initializing text mode CGA video device\r\n");
 

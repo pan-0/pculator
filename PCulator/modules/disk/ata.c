@@ -494,6 +494,7 @@ int ata_insert_disk(int select, char* filename) {
 		ata.disk[select].cylinders--; //keep CHS inside LBA boundary
 	}
 	debug_log(DEBUG_INFO, "[ATA] Inserted disk on %s channel: %s\n", select ? "slave" : "master", filename);
+	return 1;
 }
 
 void ata_init(I8259_t* i8259) {

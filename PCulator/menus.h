@@ -1,5 +1,5 @@
 #ifndef _MENUS_H_
-#define MENUS_H_
+#define _MENUS_H_
 
 #ifdef _WIN32
 #include <stdint.h>

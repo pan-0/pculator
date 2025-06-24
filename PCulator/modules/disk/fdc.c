@@ -365,7 +365,7 @@ void fdc_reset(FDC_t* fdc) {
 }
 
 int fdc_insert(FDC_t* fdc, uint8_t num, char* dfile) {
-	int ret = 0;
+	//int ret = 0;
 
 	if (num > 1) {
 		return -1;

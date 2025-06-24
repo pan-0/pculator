@@ -969,6 +969,11 @@ static void OpFldConstant(struct Machine* m, u64 rde) {
         CASE(6, x = Fldz());
     default:
         OpUdImpl(m);
+        /*
+         * XXX: Remove this once `OpUdImpl` is implemented. For now, warnings
+         * are issued because `x` remains uninitialized.
+         */
+        UNREACHABLE();
     }
     FpuPush(m, x);
 }
