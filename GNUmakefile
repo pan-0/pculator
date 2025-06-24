@@ -27,6 +27,32 @@ release.ldflags ::= \
 	-Wl,--strip-all \
 	-Wl,--strip-debug
 
+sanitize.cflags ::= \
+	-ggdb \
+	-O2 \
+	-flto=auto \
+	-fno-plt \
+	-fno-ident \
+	-fno-asynchronous-unwind-tables \
+	-fdata-sections \
+	-ffunction-sections \
+	-mmanual-endbr \
+	-fno-omit-frame-pointer \
+	-fsanitize-recover=address \
+	-fsanitize=address \
+	-fsanitize=leak \
+	-fsanitize=undefined \
+	-fsanitize=pointer-compare \
+	-fsanitize=pointer-subtract \
+	-fsanitize=pointer-overflow \
+	-fsanitize=float-divide-by-zero \
+	-fsanitize=signed-integer-overflow
+sanitize.ldflags ::= \
+	-Wl,--gc-sections \
+	-Wl,-O1 \
+	-Wl,--build-id=none \
+	-Wl,--as-needed
+
 CFLAGS ::= \
 	-D_FILE_OFFSET_BITS=64 \
 	$($(BUILD).cflags) \
