@@ -3840,14 +3840,14 @@ void op_ext_AB(CPU_t* cpu) {
 		cpu->oper2_32 = getreg32(cpu, cpu->reg);
 		if (cpu->mode == 3) {
 			cpu->oper1_32 = readrm32(cpu, cpu->rm);
-			writerm32(cpu, cpu->rm, cpu->oper1_32 | (1 << (cpu->oper2_32 & 31)));
+			writerm32(cpu, cpu->rm, cpu->oper1_32 | ((uint32_t)1 << (cpu->oper2_32 & 31)));
 		}
 		else { //can read memory beyond 32 bits
 			if (cpu->oper2_32 & 0x80000000) printf("negative 0xAB 32-bit");
 			getea(cpu, cpu->rm);
 			cpu->ea += (cpu->oper2_32 / 32) * 4;
 			cpu->oper1_32 = cpu_readl(cpu, cpu->ea);
-			cpu_writel(cpu, cpu->ea, cpu->oper1_32 | (1 << (cpu->oper2_32 & 31)));
+			cpu_writel(cpu, cpu->ea, cpu->oper1_32 | ((uint32_t)1 << (cpu->oper2_32 & 31)));
 		}
 		cpu->cf = (cpu->oper1_32 >> (cpu->oper2_32 & 31)) & 1;
 	}
@@ -3855,14 +3855,14 @@ void op_ext_AB(CPU_t* cpu) {
 		cpu->oper2 = getreg16(cpu, cpu->reg);
 		if (cpu->mode == 3) {
 			cpu->oper1 = readrm16(cpu, cpu->rm);
-			writerm16(cpu, cpu->rm, cpu->oper1 | (1 << (cpu->oper2 & 15)));
+			writerm16(cpu, cpu->rm, cpu->oper1 | ((uint16_t)1 << (cpu->oper2 & 15)));
 		}
 		else {
 			if (cpu->oper2 & 0x8000) printf("negative 0xAB 16-bit");
 			getea(cpu, cpu->rm);
 			cpu->ea += (cpu->oper2 / 16) * 2;
 			cpu->oper1 = cpu_readw(cpu, cpu->ea);
-			cpu_writew(cpu, cpu->ea, cpu->oper1 | (1 << (cpu->oper2 & 15)));
+			cpu_writew(cpu, cpu->ea, cpu->oper1 | ((uint16_t)1 << (cpu->oper2 & 15)));
 		}
 		cpu->cf = (cpu->oper1 >> (cpu->oper2 & 15)) & 1;
 	}
@@ -3968,14 +3968,14 @@ void op_ext_B3(CPU_t* cpu) {
 		cpu->oper2_32 = getreg32(cpu, cpu->reg);
 		if (cpu->mode == 3) {
 			cpu->oper1_32 = readrm32(cpu, cpu->rm);
-			writerm32(cpu, cpu->rm, cpu->oper1_32 & ~(1 << (cpu->oper2_32 & 31)));
+			writerm32(cpu, cpu->rm, cpu->oper1_32 & ~((uint32_t)1 << (cpu->oper2_32 & 31)));
 		}
 		else { //can read memory beyond 32 bits
 			if (cpu->oper2_32 & 0x80000000) printf("negative 0xB3 32-bit");
 			getea(cpu, cpu->rm);
 			cpu->ea += (cpu->oper2_32 / 32) * 4;
 			cpu->oper1_32 = cpu_readl(cpu, cpu->ea);
-			cpu_writel(cpu, cpu->ea, cpu->oper1_32 & ~(1 << (cpu->oper2_32 & 31)));
+			cpu_writel(cpu, cpu->ea, cpu->oper1_32 & ~((uint32_t)1 << (cpu->oper2_32 & 31)));
 		}
 		cpu->cf = (cpu->oper1_32 >> (cpu->oper2_32 & 31)) & 1;
 	}
@@ -3983,14 +3983,14 @@ void op_ext_B3(CPU_t* cpu) {
 		cpu->oper2 = getreg16(cpu, cpu->reg);
 		if (cpu->mode == 3) {
 			cpu->oper1 = readrm16(cpu, cpu->rm);
-			writerm16(cpu, cpu->rm, cpu->oper1 & ~(1 << (cpu->oper2 & 15)));
+			writerm16(cpu, cpu->rm, cpu->oper1 & ~((uint16_t)1 << (cpu->oper2 & 15)));
 		}
 		else {
 			if (cpu->oper2 & 0x8000) printf("negative 0xB3 16-bit");
 			getea(cpu, cpu->rm);
 			cpu->ea += (cpu->oper2 / 16) * 2;
 			cpu->oper1 = cpu_readw(cpu, cpu->ea);
-			cpu_writew(cpu, cpu->ea, cpu->oper1 & ~(1 << (cpu->oper2 & 15)));
+			cpu_writew(cpu, cpu->ea, cpu->oper1 & ~((uint16_t)1 << (cpu->oper2 & 15)));
 		}
 		cpu->cf = (cpu->oper1 >> (cpu->oper2 & 15)) & 1;
 	}
@@ -4076,19 +4076,19 @@ void op_ext_BA(CPU_t* cpu) {
 		if (cpu->isoper32) {
 			cpu->cf = (cpu->oper1_32 >> (cpu->oper2_32 & 31)) & 1;
 			if (cpu->mode == 3) {
-				writerm32(cpu, cpu->rm, cpu->oper1_32 | (1 << (cpu->oper2_32 & 31)));
+				writerm32(cpu, cpu->rm, cpu->oper1_32 | ((uint32_t)1 << (cpu->oper2_32 & 31)));
 			}
 			else {
-				cpu_writel(cpu, cpu->ea, cpu->oper1_32 | (1 << (cpu->oper2_32 & 31)));
+				cpu_writel(cpu, cpu->ea, cpu->oper1_32 | ((uint32_t)1 << (cpu->oper2_32 & 31)));
 			}
 		}
 		else {
 			cpu->cf = (cpu->oper1 >> (cpu->oper2 & 15)) & 1;
 			if (cpu->mode == 3) {
-				writerm16(cpu, cpu->rm, cpu->oper1 | (1 << (cpu->oper2 & 15)));
+				writerm16(cpu, cpu->rm, cpu->oper1 | ((uint16_t)1 << (cpu->oper2 & 15)));
 			}
 			else {
-				cpu_writew(cpu, cpu->ea, cpu->oper1 | (1 << (cpu->oper2 & 15)));
+				cpu_writew(cpu, cpu->ea, cpu->oper1 | ((uint16_t)1 << (cpu->oper2 & 15)));
 			}
 		}
 		break;
@@ -4096,19 +4096,19 @@ void op_ext_BA(CPU_t* cpu) {
 		if (cpu->isoper32) {
 			cpu->cf = (cpu->oper1_32 >> (cpu->oper2_32 & 31)) & 1;
 			if (cpu->mode == 3) {
-				writerm32(cpu, cpu->rm, cpu->oper1_32 & ~(1 << (cpu->oper2_32 & 31)));
+				writerm32(cpu, cpu->rm, cpu->oper1_32 & ~((uint32_t)1 << (cpu->oper2_32 & 31)));
 			}
 			else {
-				cpu_writel(cpu, cpu->ea, cpu->oper1_32 & ~(1 << (cpu->oper2_32 & 31)));
+				cpu_writel(cpu, cpu->ea, cpu->oper1_32 & ~((uint32_t)1 << (cpu->oper2_32 & 31)));
 			}
 		}
 		else {
 			cpu->cf = (cpu->oper1 >> (cpu->oper2 & 15)) & 1;
 			if (cpu->mode == 3) {
-				writerm16(cpu, cpu->rm, cpu->oper1 & ~(1 << (cpu->oper2 & 15)));
+				writerm16(cpu, cpu->rm, cpu->oper1 & ~((uint16_t)1 << (cpu->oper2 & 15)));
 			}
 			else {
-				cpu_writew(cpu, cpu->ea, cpu->oper1 & ~(1 << (cpu->oper2 & 15)));
+				cpu_writew(cpu, cpu->ea, cpu->oper1 & ~((uint16_t)1 << (cpu->oper2 & 15)));
 			}
 		}
 		break;
@@ -4116,19 +4116,19 @@ void op_ext_BA(CPU_t* cpu) {
 		if (cpu->isoper32) {
 			cpu->cf = (cpu->oper1_32 >> (cpu->oper2_32 & 31)) & 1;
 			if (cpu->mode == 3) {
-				writerm32(cpu, cpu->rm, cpu->oper1_32 ^ (1 << (cpu->oper2_32 & 31)));
+				writerm32(cpu, cpu->rm, cpu->oper1_32 ^ ((uint32_t)1 << (cpu->oper2_32 & 31)));
 			}
 			else {
-				cpu_writel(cpu, cpu->ea, cpu->oper1_32 ^ (1 << (cpu->oper2_32 & 31)));
+				cpu_writel(cpu, cpu->ea, cpu->oper1_32 ^ ((uint32_t)1 << (cpu->oper2_32 & 31)));
 			}
 		}
 		else {
 			cpu->cf = (cpu->oper1 >> (cpu->oper2 & 15)) & 1;
 			if (cpu->mode == 3) {
-				writerm16(cpu, cpu->rm, cpu->oper1 ^ (1 << (cpu->oper2 & 15)));
+				writerm16(cpu, cpu->rm, cpu->oper1 ^ ((uint16_t)1 << (cpu->oper2 & 15)));
 			}
 			else {
-				cpu_writew(cpu, cpu->ea, cpu->oper1 ^ (1 << (cpu->oper2 & 15)));
+				cpu_writew(cpu, cpu->ea, cpu->oper1 ^ ((uint16_t)1 << (cpu->oper2 & 15)));
 			}
 		}
 		break;
@@ -4145,14 +4145,14 @@ void op_ext_BB(CPU_t* cpu) {
 		cpu->oper2_32 = getreg32(cpu, cpu->reg);
 		if (cpu->mode == 3) {
 			cpu->oper1_32 = readrm32(cpu, cpu->rm);
-			writerm32(cpu, cpu->rm, cpu->oper1_32 ^ (1 << (cpu->oper2_32 & 31)));
+			writerm32(cpu, cpu->rm, cpu->oper1_32 ^ ((uint32_t)1 << (cpu->oper2_32 & 31)));
 		}
 		else { //can read memory beyond 32 bits
 			if (cpu->oper2_32 & 0x80000000) printf("negative 0xBB 32-bit");
 			getea(cpu, cpu->rm);
 			cpu->ea += (cpu->oper2_32 / 32) * 4;
 			cpu->oper1_32 = cpu_readl(cpu, cpu->ea);
-			cpu_writel(cpu, cpu->ea, cpu->oper1_32 ^ (1 << (cpu->oper2_32 & 31)));
+			cpu_writel(cpu, cpu->ea, cpu->oper1_32 ^ ((uint32_t)1 << (cpu->oper2_32 & 31)));
 		}
 		cpu->cf = (cpu->oper1_32 >> (cpu->oper2_32 & 31)) & 1;
 	}
@@ -4160,14 +4160,14 @@ void op_ext_BB(CPU_t* cpu) {
 		cpu->oper2 = getreg16(cpu, cpu->reg);
 		if (cpu->mode == 3) {
 			cpu->oper1 = readrm16(cpu, cpu->rm);
-			writerm16(cpu, cpu->rm, cpu->oper1 ^ (1 << (cpu->oper2 & 15)));
+			writerm16(cpu, cpu->rm, cpu->oper1 ^ ((uint16_t)1 << (cpu->oper2 & 15)));
 		}
 		else {
 			if (cpu->oper2 & 0x8000) printf("negative 0xBB 16-bit");
 			getea(cpu, cpu->rm);
 			cpu->ea += (cpu->oper2 / 16) * 2;
 			cpu->oper1 = cpu_readw(cpu, cpu->ea);
-			cpu_writew(cpu, cpu->ea, cpu->oper1 ^ (1 << (cpu->oper2 & 15)));
+			cpu_writew(cpu, cpu->ea, cpu->oper1 ^ ((uint16_t)1 << (cpu->oper2 & 15)));
 		}
 		cpu->cf = (cpu->oper1 >> (cpu->oper2 & 15)) & 1;
 	}
@@ -4185,7 +4185,7 @@ void op_ext_BC(CPU_t* cpu) {
 		}
 		cpu->zf = 0;
 		for (i = 0; i < 32; i++) {
-			if (src & (1 << i)) break;
+			if (src & ((uint32_t)1 << i)) break;
 		}
 		putreg32(cpu, cpu->reg, i);
 	}
@@ -4197,7 +4197,7 @@ void op_ext_BC(CPU_t* cpu) {
 		}
 		cpu->zf = 0;
 		for (i = 0; i < 16; i++) {
-			if (src & (1 << i)) break;
+			if (src & ((uint16_t)1 << i)) break;
 		}
 		putreg16(cpu, cpu->reg, (uint16_t)i);
 	}
@@ -4216,7 +4216,7 @@ void op_ext_BD(CPU_t* cpu) {
 		}
 		cpu->zf = 0;
 		for (i = 31; i >= 0; i--) {
-			if (src & (1 << i)) break;
+			if (src & ((uint32_t)1 << i)) break;
 		}
 		putreg32(cpu, cpu->reg, i);
 	}
@@ -4228,7 +4228,7 @@ void op_ext_BD(CPU_t* cpu) {
 		}
 		cpu->zf = 0;
 		for (i = 15; i >= 0; i--) {
-			if (src & (1 << i)) break;
+			if (src & ((uint16_t)1 << i)) break;
 		}
 		putreg16(cpu, cpu->reg, (uint16_t)i);
 	}
